@@ -27,6 +27,12 @@
             <el-menu-item index="3">
               <template slot="title"><i class="el-icon-delete"></i>回收站</template>
             </el-menu-item>
+            <el-menu-item index="4">
+              <template slot="title"><i class="el-icon-top"></i>上传列表</template>
+            </el-menu-item>
+            <el-menu-item index="5">
+              <template slot="title"><i class="el-icon-bottom"></i>下载列表</template>
+            </el-menu-item>
             <el-footer>
 <!--              <el-progress :percentage="50" "></el-progress>-->
               <el-progress type="circle" :percentage="100" stroke-width="25" color="#ebeef5"></el-progress><br>
@@ -40,7 +46,7 @@
           <el-main>
             <el-dropdown style="padding-right: 5px;padding-bottom: 3px">
               <el-button type="primary">
-                <i class="el-icon-upload2 el-icon--left">上传</i>
+                <i class="el-icon-upload2 el-icon--left">&nbsp;上传</i>
               </el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item>上传文件</el-dropdown-item>
@@ -49,26 +55,25 @@
             </el-dropdown>
             <el-button-group>
               <el-button plain>
-                <i class="el-icon-upload2 el-icon--left">新建文件夹</i>
+                <i class="el-icon-folder-add el-icon--left">&nbsp;新建文件夹</i>
               </el-button>
               <el-button plain>
-                <i class="el-icon-upload2 el-icon--left">分享</i>
+                <i class="el-icon-tickets el-icon--left">&nbsp;新建文件</i>
               </el-button>
               <el-button plain>
-                <i class="el-icon-upload2 el-icon--left">下载</i>
+                <i class="el-icon-link el-icon--left">&nbsp;分享</i>
               </el-button>
               <el-button plain>
-                <i class="el-icon-upload2 el-icon--left">删除</i>
+                <i class="el-icon-download el-icon--left">&nbsp;下载</i>
               </el-button>
               <el-button plain>
-                <i class="el-icon-upload2 el-icon--left">重命名</i>
+                <i class="el-icon-delete el-icon--left">&nbsp;删除</i>
               </el-button>
               <el-button plain>
-                <i class="el-icon-upload2 el-icon--left">复制到</i>
+                <i class="el-icon-upload2 el-icon--left">&nbsp;重命名</i>
               </el-button>
-              <el-button plain>
-                <i class="el-icon-upload2 el-icon--left">移动到</i>
-              </el-button>
+              <el-button plain>&nbsp;复制到</el-button>
+              <el-button plain>&nbsp;移动到</el-button>
             </el-button-group>
 
             <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -86,22 +91,37 @@
               @selection-change="handleSelectionChange">
               <el-table-column
                 type="selection"
-                width="55">
+                width="100%">
               </el-table-column>
               <el-table-column
-                label="日期"
-                width="120">
-                <template slot-scope="scope">{{ scope.row.date }}</template>
-              </el-table-column>
-              <el-table-column
+                label="文件名"
                 prop="name"
-                label="姓名"
-                width="120">
+                min-width="200">
+                <template slot-scope="scope">
+                  <i :class="getIcon(scope)"></i>
+                  <span>{{scope.row.name}}</span>
+                </template>
+<!--                <template slot-scope="scope">-->
+<!--                  <i-->
+<!--                    :class="scope.row.type==1? getIcon(1):'el-icon-view'"-->
+<!--                  ></i>-->
+<!--                  <span>{{scope.row.name}}</span>-->
+<!--                </template>-->
               </el-table-column>
               <el-table-column
-                prop="address"
-                label="地址"
+                prop="size"
+                label="大小"
+                header-align="center"
+                align="center"
+                min-width="60">
+              </el-table-column>
+              <el-table-column
+                label="修改日期"
+                header-align="center"
+                align="center"
+                min-width="100"
                 show-overflow-tooltip>
+                <template slot-scope="scope">{{ scope.row.date }}</template>
               </el-table-column>
             </el-table>
           </el-main>
@@ -118,34 +138,21 @@ export default {
     return {
       msg: 'display content',
       tabPosition: 'left',
-      tableData: [{
-        date: '2016-05-03',
+      tableData: [ {
         name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
+        size: '-',
         date: '2016-05-08',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
+        type: 1
       }, {
+        name: '王小虎',
+        size: '-',
         date: '2016-05-06',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
+        type: 2
       }, {
-        date: '2016-05-07',
         name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
+        size: '-',
+        date: '2016-05-07',
+        type: 1
       }]
     }
   },
@@ -153,6 +160,14 @@ export default {
     onMouseEnter (row, column, cell, event) {
       console.log(row)
       console.log(column)
+    },
+    // 控制icon显示
+    getIcon (scope) {
+      if (scope.row.type === 1) {
+        return 'el-icon-folder'
+      } else {
+        return 'el-icon-view'
+      }
     }
   }
 }
