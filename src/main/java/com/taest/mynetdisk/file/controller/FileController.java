@@ -1,9 +1,14 @@
 package com.taest.mynetdisk.file.controller;
 
 
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.taest.mynetdisk.dto.FileDto;
+import com.taest.mynetdisk.file.entity.MyFile;
+import com.taest.mynetdisk.file.service.IFileService;
+import com.taest.mynetdisk.response.Result;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 /**
  * <p>
@@ -14,7 +19,25 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2021-01-11
  */
 @RestController
-@RequestMapping("/file/file")
+@RequestMapping("/admin")
 public class FileController{
+
+    @Autowired
+    private IFileService fileService;
+
+    @GetMapping("/files")
+    public Result list(){
+        Result result = new Result();
+        List<MyFile> list = fileService.list();
+        result.setData(list);
+        return result;
+    }
+
+    @PostMapping("/file")
+    public Result upload(@RequestBody FileDto fileDto){
+        return fileService.uploadFile(fileDto);
+    }
+
+
 
 }

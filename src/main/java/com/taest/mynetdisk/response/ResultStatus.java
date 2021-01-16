@@ -16,7 +16,8 @@ public enum ResultStatus {
 
     SUCCESS(0, HttpStatus.OK, "成功"),
     RESOURCE_NOT_FOUND(1001, HttpStatus.NOT_FOUND, "未找到该资源"),
-    REQUEST_VALIDATION_FAILED(1002, HttpStatus.BAD_REQUEST, "请求数据格式验证失败");
+    REQUEST_VALIDATION_FAILED(1002, HttpStatus.BAD_REQUEST, "请求数据格式验证失败"),
+    UPLOAD_FAILED(1003, HttpStatus.INTERNAL_SERVER_ERROR, "上传失败");
 
     private Integer code;
     private String message;

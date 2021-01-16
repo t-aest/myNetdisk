@@ -1,6 +1,6 @@
 package com.taest.mynetdisk.file.mapper;
 
-import com.taest.mynetdisk.file.entity.File;
+import com.taest.mynetdisk.file.entity.MyFile;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author jobob
  * @since 2021-01-11
  */
-public interface FileMapper extends BaseMapper<File> {
+public interface FileMapper extends BaseMapper<MyFile> {
 
 }
