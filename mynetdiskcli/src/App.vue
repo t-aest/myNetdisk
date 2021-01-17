@@ -1,12 +1,26 @@
 <template>
   <div id="app">
     <router-view/>
+    <!--  上传组件-->
+    <global-uploader></global-uploader>
   </div>
+
 </template>
 
 <script>
+import globalUploader from '@/components/GlobalUploader.vue'
 export default {
-  name: 'App'
+  name: 'App',
+  data () {
+    return {}
+  },
+  components: {
+    globalUploader
+  },
+  computed: {},
+  created () {
+  },
+  watch: {}
 }
 </script>
 
