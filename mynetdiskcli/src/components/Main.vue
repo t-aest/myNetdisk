@@ -44,15 +44,7 @@
         </el-aside>
         <el-container>
           <el-main>
-            <el-dropdown style="padding-right: 5px;padding-bottom: 3px">
-              <el-button type="primary">
-                <i class="el-icon-upload2 el-icon--left">&nbsp;上传</i>
-              </el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item>上传文件</el-dropdown-item>
-                <el-dropdown-item>上传文件夹</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+            <el-button @click="upload">上传</el-button>
             <el-button-group>
               <el-button plain>
                 <i class="el-icon-folder-add el-icon--left">&nbsp;新建文件夹</i>
@@ -132,8 +124,10 @@
   </div>
 </template>
 <script>
+import Bus from '@/assets/js/bus';
 export default {
   name: 'HelloWorld',
+  components: {},
   data () {
     return {
       msg: 'display content',
@@ -156,6 +150,18 @@ export default {
       }]
     }
   },
+  mounted () {
+    // 文件选择后的回调
+    Bus.$on('fileAdded', () => {
+      console.log('文件已选择')
+    });
+
+    // 文件上传成功的回调
+    Bus.$on('fileSuccess', () => {
+      console.log('文件上传成功')
+    });
+  },
+  computed: {},
   methods: {
     onMouseEnter (row, column, cell, event) {
       console.log(row)
@@ -168,6 +174,16 @@ export default {
       } else {
         return 'el-icon-view'
       }
+    },
+    upload () {
+      // 打开文件选择框
+      Bus.$emit('openUploader', {
+        id: '1111'// 传入的参数
+      })
+    },
+    destroyed () {
+      Bus.$off('fileAdded');
+      Bus.$off('fileSuccess');
     }
   }
 }

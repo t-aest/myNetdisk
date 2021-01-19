@@ -3,6 +3,7 @@ package com.taest.mynetdisk.file.entity;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -79,6 +80,7 @@ public class MyFile {
     /**
      * 文件标识|MD5
      */
+    @TableField(value = "`key`")
     private String key;
 
 

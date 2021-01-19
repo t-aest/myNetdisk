@@ -2,6 +2,7 @@ package com.taest.mynetdisk.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -75,6 +76,11 @@ public class FileDto {
      * base64
      */
     private String shard;
+
+    /**
+     * file
+     */
+    private MultipartFile file;
 
 
 

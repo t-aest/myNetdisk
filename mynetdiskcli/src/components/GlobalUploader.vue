@@ -51,8 +51,8 @@
       return {
         options: {
           // https://github.com/simple-uploader/Uploader/tree/develop/samples/Node.js
-          target: '//localhost:3000/upload',
-          testChunks: true,
+          target: 'http://localhost:8096/admin/file',
+          testChunks: false,
           chunkSize: '2048000',
           fileParameterName: 'uploadfile',
           maxChunkRetries: 3,
@@ -185,7 +185,7 @@
         this.statusRemove(file.id);
       },
       fileListShow() {
-        let $list = $('#global-uploader .file-list');
+        let $list = $('.global-uploader .file-list');
 
         if ($list.is(':visible')) {
           $list.slideUp();
@@ -262,7 +262,7 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-  #global-uploader {
+  .global-uploader {
     position: fixed;
     z-index: 20;
     right: 15px;
@@ -318,7 +318,7 @@
       font-size: 16px;
     }
 
-    /deep/.uploader-file-icon {
+    >>>.uploader-file-icon {
       &:before {
         content: '' !important;
       }
@@ -334,7 +334,7 @@
       }
     }
 
-    /deep/.uploader-file-actions > span {
+    >>>.uploader-file-actions > span {
       margin-right: 6px;
     }
   }

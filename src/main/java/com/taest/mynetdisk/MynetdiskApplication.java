@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.taest.mynetdisk.mapper")
+@MapperScan("com.taest.mynetdisk.*.mapper")
 public class MynetdiskApplication {
 
     public static void main(String[] args) {

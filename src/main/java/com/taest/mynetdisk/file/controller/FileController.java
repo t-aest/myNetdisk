@@ -34,7 +34,7 @@ public class FileController{
     }
 
     @PostMapping("/file")
-    public Result upload(@RequestBody FileDto fileDto){
+    public Result upload(FileDto fileDto){
         return fileService.uploadFile(fileDto);
     }
 
