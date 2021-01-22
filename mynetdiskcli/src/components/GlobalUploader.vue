@@ -51,10 +51,10 @@
       return {
         options: {
           // https://github.com/simple-uploader/Uploader/tree/develop/samples/Node.js
-          target: 'http://localhost:8096/admin/file',
+          target: 'http://localhost:8096/api/file/upload',
           testChunks: false,
-          chunkSize: '2048000',
-          fileParameterName: 'uploadfile',
+          chunkSize: 50 * 1024,
+          fileParameterName: 'uploadFile',
           maxChunkRetries: 3,
           query() {
           }
@@ -92,7 +92,7 @@
       onFileSuccess(rootFile, file, response, chunk) {
         let res = JSON.parse(response);
         // 服务器自定义的错误（即虽返回200，但是是错误的情况），这种错误是Uploader无法拦截的
-        if (!res.result) {
+        if (res.code !== 0) {
           this.$message({ message: res.message, type: 'error' });
           // 文件状态设为“失败”
           this.statusSet(file.id, 'failed');
@@ -114,6 +114,8 @@
           // 不需要合并
         } else {
           Bus.$emit('fileSuccess');
+          this.statusSet(file.id, 'success');
+
           console.log('上传成功');
         }
       },
@@ -132,7 +134,7 @@
         let time = new Date().getTime();
         let blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;
         let currentChunk = 0;
-        const chunkSize = 10 * 1024 * 1000;
+        const chunkSize = 50 * 1024;
         let chunks = Math.ceil(file.size / chunkSize);
         let spark = new SparkMD5.ArrayBuffer();
 
@@ -173,6 +175,8 @@
         }
       },
       computeMD5Success(md5, file) {
+        console.log(file)
+        this.params.fileType = file.fileType
         // 将自定义参数直接加载uploader实例的opts上
         Object.assign(this.uploader.opts, {
           query: {
@@ -221,6 +225,10 @@
           },
           failed: {
             text: '上传失败',
+            bgc: '#e2eeff'
+          },
+          success: {
+            text: '上传成功',
             bgc: '#e2eeff'
           }
         }

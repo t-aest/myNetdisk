@@ -178,7 +178,8 @@ export default {
     upload () {
       // 打开文件选择框
       Bus.$emit('openUploader', {
-        id: '1111'// 传入的参数
+        id: '1111',
+        parentId: 0// 传入的参数
       })
     },
     destroyed () {

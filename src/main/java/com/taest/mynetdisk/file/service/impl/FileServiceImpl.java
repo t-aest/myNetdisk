@@ -1,16 +1,14 @@
 package com.taest.mynetdisk.file.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.taest.mynetdisk.dto.FileDto;
+import com.taest.mynetdisk.exception.file.FileException;
 import com.taest.mynetdisk.file.entity.MyFile;
 import com.taest.mynetdisk.file.mapper.FileMapper;
 import com.taest.mynetdisk.file.service.IFileService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.taest.mynetdisk.response.BaseController;
 import com.taest.mynetdisk.response.Result;
 import com.taest.mynetdisk.response.ResultStatus;
-import com.taest.mynetdisk.util.Base64ToMultipartFile;
 import com.taest.mynetdisk.util.CopyUtil;
 import com.taest.mynetdisk.util.UuidUtil;
 import org.slf4j.Logger;
@@ -58,12 +56,11 @@ public class FileServiceImpl extends BaseController implements IFileService {
     public Result uploadFile(FileDto fileDto) {
         LOG.info("上传文件开始");
 
-        String key = fileDto.getKey();
+        String key = fileDto.getFileKey();
         String type =  fileDto.getFileType();
         String path =  fileDto.getPath();
-        String shardBase64 = fileDto.getShard();
         try {
-            MultipartFile shard = Base64ToMultipartFile.base64ToMultipart(shardBase64);
+            MultipartFile shard = fileDto.getFile();
             //如果文件夹不存在则创建
             File file = new File(FILE_PATH);
             if (!file.exists()){
@@ -79,12 +76,12 @@ public class FileServiceImpl extends BaseController implements IFileService {
             LOG.info(dest.getAbsolutePath());
             LOG.info("保存文件记录开始");
             this.save(fileDto);
-            if (fileDto.getShardSize().equals(fileDto.getShardTotal())){
+            if (fileDto.getShardIndex().equals(fileDto.getShardTotal())){
                 this.merge(fileDto);
             }
             return success();
         }catch (Exception e){
-            return failure(ResultStatus.UPLOAD_FAILED);
+            throw new FileException(ResultStatus.UPLOAD_FAILED,null);
         }
     }
 
@@ -140,7 +137,7 @@ public class FileServiceImpl extends BaseController implements IFileService {
         MyFile file = CopyUtil.copy(fileDto, MyFile.class);
 //        Wrapper wrapper = new Wrapper();
 //        wrapper.
-        MyFile myFile = selectByKey(fileDto.getKey());
+        MyFile myFile = selectByKey(fileDto.getFileKey());
         if (myFile == null) {
             this.insert(file);
         } else {
@@ -152,7 +149,7 @@ public class FileServiceImpl extends BaseController implements IFileService {
     @Override
     public MyFile selectByKey(String key) {
         QueryWrapper<MyFile> wrapper = new QueryWrapper<>();
-        wrapper.eq("key",key);
+        wrapper.eq("file_key",key);
         List<MyFile> fileList = fileMapper.selectList(wrapper);
         if (CollectionUtils.isEmpty(fileList)) {
             return null;

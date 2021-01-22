@@ -80,7 +80,6 @@ public class MyFile {
     /**
      * 文件标识|MD5
      */
-    @TableField(value = "`key`")
     private String key;
 
 

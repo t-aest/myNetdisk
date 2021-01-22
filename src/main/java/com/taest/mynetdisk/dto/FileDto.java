@@ -70,7 +70,7 @@ public class FileDto {
     /**
      * 文件标识|MD5
      */
-    private String key;
+    private String fileKey;
 
     /**
      * base64
