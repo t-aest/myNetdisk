@@ -98,26 +98,25 @@
           this.statusSet(file.id, 'failed');
           return
         }
-        // 如果服务端返回需要合并
-        if (res.needMerge) {
-          // 文件状态设为“合并中”
-          this.statusSet(file.id, 'merging');
-          api.mergeSimpleUpload({
-            tempName: res.tempName,
-            fileName: file.name,
-            ...this.params,
-          }).then(res => {
-            // 文件合并成功
-            Bus.$emit('fileSuccess');
-            this.statusRemove(file.id);
-          }).catch(e => {});
-          // 不需要合并
-        } else {
-          Bus.$emit('fileSuccess');
+        // // 如果服务端返回需要合并
+        // if (res.needMerge) {
+        //   // 文件状态设为“合并中”
+        //   this.statusSet(file.id, 'merging');
+        //   api.mergeSimpleUpload({
+        //     tempName: res.tempName,
+        //     fileName: file.name,
+        //     ...this.params,
+        //   }).then(res => {
+        //     // 文件合并成功
+        //     Bus.$emit('fileSuccess');
+        //     this.statusRemove(file.id);
+        //   }).catch(e => {});
+        //   // 不需要合并
+        // } else {
+          Bus.$emit('fileSuccess',res);
           this.statusSet(file.id, 'success');
-
           console.log('上传成功');
-        }
+        // }
       },
       onFileError(rootFile, file, response, chunk) {
         this.$message({

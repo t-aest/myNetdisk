@@ -34,8 +34,9 @@
               <template slot="title"><i class="el-icon-bottom"></i>下载列表</template>
             </el-menu-item>
             <el-footer>
-<!--              <el-progress :percentage="50" "></el-progress>-->
-              <el-progress type="circle" :percentage="100" stroke-width="25" color="#ebeef5"></el-progress><br>
+              <!--              <el-progress :percentage="50" "></el-progress>-->
+              <el-progress type="circle" :percentage="100" stroke-width="25" color="#ebeef5"></el-progress>
+              <br>
               <label>内存占用：</label><span>4156G/10T</span><br>
               <label>当前时间：</label><br><span>2021/07/11 21:13:02</span>
 
@@ -51,6 +52,9 @@
               </el-button>
               <el-button plain>
                 <i class="el-icon-tickets el-icon--left">&nbsp;新建文件</i>
+              </el-button>
+              <el-button plain>
+                <i class="el-icon-refresh el-icon--left" @click="refresh">刷新</i>
               </el-button>
               <el-button plain>
                 <i class="el-icon-link el-icon--left">&nbsp;分享</i>
@@ -80,6 +84,7 @@
               tooltip-effect="dark"
               style="width: 100%"
               @cell-mouse-enter="onMouseEnter"
+              @cell-mouse-leave="onMouseLeave"
               @selection-change="handleSelectionChange">
               <el-table-column
                 type="selection"
@@ -90,15 +95,27 @@
                 prop="name"
                 min-width="200">
                 <template slot-scope="scope">
-                  <i :class="getIcon(scope)"></i>
-                  <span>{{scope.row.name}}</span>
+                  <img :src="getIcon(scope)">&nbsp;
+                  <span>{{ scope.row.name }}</span>
+                  <div style="float: right;" class="more-oper" v-show="showMoreOper">
+                    <el-dropdown style="float: right;top: 9px">
+                    <span class="el-dropdown-link"><i class="el-icon-more el-icon--right"></i>
+                   </span>
+                      <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item>移动到</el-dropdown-item>
+                        <el-dropdown-item>复制到</el-dropdown-item>
+                        <el-dropdown-item>重命名</el-dropdown-item>
+                        <el-dropdown-item>删除</el-dropdown-item>
+                      </el-dropdown-menu>
+                    </el-dropdown>
+                    &nbsp;&nbsp;&nbsp;
+                    <el-button type="text" style="float: right" icon="el-icon-download"></el-button>
+                    &nbsp;
+                    <el-button type="text" style="float: right" icon="el-icon-share"></el-button>
+                  </div>
+
+
                 </template>
-<!--                <template slot-scope="scope">-->
-<!--                  <i-->
-<!--                    :class="scope.row.type==1? getIcon(1):'el-icon-view'"-->
-<!--                  ></i>-->
-<!--                  <span>{{scope.row.name}}</span>-->
-<!--                </template>-->
               </el-table-column>
               <el-table-column
                 prop="size"
@@ -106,6 +123,7 @@
                 header-align="center"
                 align="center"
                 min-width="60">
+                <template>--</template>
               </el-table-column>
               <el-table-column
                 label="修改日期"
@@ -113,103 +131,119 @@
                 align="center"
                 min-width="100"
                 show-overflow-tooltip>
-                <template slot-scope="scope">{{ scope.row.date }}</template>
+                <template slot-scope="scope">{{ dateString(scope.row.createdAt) }}</template>
               </el-table-column>
             </el-table>
           </el-main>
-          <el-footer>版权所有 &copy; xxxxxxxx &nbsp;&nbsp;  24小时客户服务热线：400-8879-597</el-footer>
+          <el-footer>版权所有 &copy; xxxxxxxx &nbsp;&nbsp; 24小时客户服务热线：400-8879-597</el-footer>
         </el-container>
       </el-container>
     </el-container>
   </div>
 </template>
 <script>
-import Bus from '@/assets/js/bus';
+import Bus from '@/assets/js/bus'
+import {apiConfig} from '../request/api'
+import {FileTypes, Util} from "../assets/js/util";
+
+'@assets/js/utll'
 export default {
   name: 'HelloWorld',
   components: {},
-  data () {
+  data() {
     return {
       msg: 'display content',
       tabPosition: 'left',
-      tableData: [ {
-        name: '王小虎',
-        size: '-',
-        date: '2016-05-08',
-        type: 1
-      }, {
-        name: '王小虎',
-        size: '-',
-        date: '2016-05-06',
-        type: 2
-      }, {
-        name: '王小虎',
-        size: '-',
-        date: '2016-05-07',
-        type: 1
-      }]
+      tableData: [],
+      showMoreOper: false
     }
   },
-  mounted () {
+  mounted() {
+    this.list()
     // 文件选择后的回调
     Bus.$on('fileAdded', () => {
       console.log('文件已选择')
     });
 
     // 文件上传成功的回调
-    Bus.$on('fileSuccess', () => {
-      console.log('文件上传成功')
+    Bus.$on('fileSuccess',(res) => {
+      console.log('文件已sucess   ')
+      this.tableData.push(res.data)
+      console.log(res)
     });
   },
   computed: {},
   methods: {
-    onMouseEnter (row, column, cell, event) {
-      console.log(row)
-      console.log(column)
+    dateString(date) {
+      return Util.formatdate(date, 0)
+    },
+    onMouseEnter(row, column, cell, event) {
+      var self = this
+      this.showMoreOper = true
+    },
+    onMouseLeave(row, column, cell, event) {
+      var self = this
+      this.showMoreOper = false
     },
     // 控制icon显示
-    getIcon (scope) {
-      if (scope.row.type === 1) {
-        return 'el-icon-folder'
-      } else {
-        return 'el-icon-view'
-      }
+    getIcon(scope) {
+      return FileTypes.getIconByType(scope.row.fileType)
     },
-    upload () {
+    // 刷新文件列表
+    refresh(scope) {
+      this.list();
+    },
+    list(data) {
+      let self = this;
+      apiConfig.listFiles(data)
+        .then(res => {
+          console.log(res.data)
+          self.tableData = res.data
+        }).catch(err => {
+        console.log(err)
+      });
+    },
+    upload() {
       // 打开文件选择框
       Bus.$emit('openUploader', {
         id: '1111',
         parentId: 0// 传入的参数
       })
     },
-    destroyed () {
+    destroyed() {
       Bus.$off('fileAdded');
       Bus.$off('fileSuccess');
     }
   }
 }
 </script>
-<style scoped>
+<style scoped lang="scss">
 .el-dropdown {
   vertical-align: top;
 }
-.el-table{
+
+.el-table {
   border-top: solid 1px #e6e6e6;
 }
-.el-breadcrumb{
+
+.el-breadcrumb {
   padding-top: 7px;
   padding-bottom: 7px;
 }
+
 .el-dropdown + .el-dropdown {
   margin-left: 15px;
 }
+
 .el-icon-arrow-down {
   font-size: 12px;
 }
+
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
   min-height: 400px;
 }
+
 /*.el-button{*/
 /*  background-color: #ffffff;*/
 /*  border-color: skyblue;*/
@@ -217,24 +251,36 @@ export default {
 /*  padding: 10px 10px 10px 10px;*/
 /*  border-radius: 5px;*/
 /*}*/
-.el-menu{
+.el-menu {
   border-right-style: none;
   /*align-items: center; !* 水平居中 *!*/
   /*justify-content: center; !* 垂直居中 *!*/
 }
+
 .el-header, .el-footer {
   color: #333;
   text-align: center;
   line-height: 60px;
 }
+
 .el-aside {
   overflow: auto;
   color: #333;
   float: left;
   height: calc(100vh - 60px);
 }
+
 .el-main {
   padding: 10px;
   color: #333;
+}
+
+.el-dropdown-link {
+  cursor: pointer;
+  color: #409EFF;
+}
+
+.el-icon-arrow-down {
+  font-size: 12px;
 }
 </style>
