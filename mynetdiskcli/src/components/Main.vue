@@ -105,7 +105,7 @@
                         <el-dropdown-item>移动到</el-dropdown-item>
                         <el-dropdown-item>复制到</el-dropdown-item>
                         <el-dropdown-item>重命名</el-dropdown-item>
-                        <el-dropdown-item>删除</el-dropdown-item>
+                        <el-dropdown-item @click.native="delFile(scope)">删除</el-dropdown-item>
                       </el-dropdown-menu>
                     </el-dropdown>
                     &nbsp;&nbsp;&nbsp;
@@ -113,7 +113,6 @@
                     &nbsp;
                     <el-button type="text" style="float: right" icon="el-icon-share"></el-button>
                   </div>
-
 
                 </template>
               </el-table-column>
@@ -144,13 +143,12 @@
 <script>
 import Bus from '@/assets/js/bus'
 import {apiConfig} from '../request/api'
-import {FileTypes, Util} from "../assets/js/util";
+import {FileTypes, Util} from '../assets/js/util'
 
-'@assets/js/utll'
 export default {
   name: 'HelloWorld',
   components: {},
-  data() {
+  data () {
     return {
       msg: 'display content',
       tabPosition: 'left',
@@ -158,61 +156,81 @@ export default {
       showMoreOper: false
     }
   },
-  mounted() {
+  mounted () {
     this.list()
     // 文件选择后的回调
     Bus.$on('fileAdded', () => {
       console.log('文件已选择')
-    });
+    })
 
     // 文件上传成功的回调
-    Bus.$on('fileSuccess',(res) => {
+    Bus.$on('fileSuccess', (res) => {
       console.log('文件已sucess   ')
       this.tableData.push(res.data)
       console.log(res)
-    });
+    })
   },
   computed: {},
   methods: {
-    dateString(date) {
+    dateString (date) {
       return Util.formatdate(date, 0)
     },
-    onMouseEnter(row, column, cell, event) {
-      var self = this
+    handleCommand (command) {
+      console.log('click on item ' + command)
+    },
+    onMouseEnter (row, column, cell, event) {
+      // eslint-disable-next-line no-unused-vars
+      let self = this
       this.showMoreOper = true
     },
-    onMouseLeave(row, column, cell, event) {
-      var self = this
+    onMouseLeave (row, column, cell, event) {
+      // eslint-disable-next-line no-unused-vars
+      let self = this
       this.showMoreOper = false
     },
     // 控制icon显示
-    getIcon(scope) {
+    getIcon (scope) {
       return FileTypes.getIconByType(scope.row.fileType)
     },
     // 刷新文件列表
-    refresh(scope) {
-      this.list();
+    refresh (scope) {
+      this.list()
     },
-    list(data) {
-      let self = this;
+    list (data) {
+      let self = this
       apiConfig.listFiles(data)
         .then(res => {
           console.log(res.data)
           self.tableData = res.data
         }).catch(err => {
-        console.log(err)
-      });
+          console.log(err)
+        })
     },
-    upload() {
+    delFile (scope) {
+      let self = this
+      apiConfig.delFile(scope.row.id)
+        .then(res => {
+          console.log(res)
+          if (res.code === 0) {
+            self.tableData.splice(scope.$index,1)
+            this.$message.success('删除成功！')
+          } else {
+            this.$message.success('删除失败！')
+          }
+        }).catch(err => {
+          console.log(err)
+        })
+    },
+    upload () {
       // 打开文件选择框
       Bus.$emit('openUploader', {
         id: '1111',
         parentId: 0// 传入的参数
       })
     },
-    destroyed() {
-      Bus.$off('fileAdded');
-      Bus.$off('fileSuccess');
+    destroyed () {
+      Bus.$off('fileAdded')
+      Bus.$off('fileSuccess')
     }
   }
 }
