@@ -1,6 +1,7 @@
 package com.taest.mynetdisk.file.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.taest.mynetdisk.dto.FileDto;
 import com.taest.mynetdisk.exception.file.FileException;
 import com.taest.mynetdisk.file.entity.MyFile;
@@ -26,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -55,7 +57,6 @@ public class FileServiceImpl extends BaseController implements IFileService {
     @Transactional
     public Result uploadFile(FileDto fileDto) {
         LOG.info("上传文件开始");
-
         String key = fileDto.getFileKey();
         String type =  fileDto.getFileType();
         String path =  fileDto.getPath();
@@ -78,12 +79,15 @@ public class FileServiceImpl extends BaseController implements IFileService {
             this.save(fileDto);
             if (fileDto.getShardIndex().equals(fileDto.getShardTotal())){
                 this.merge(fileDto);
+                this.deleteTmpRecord(fileDto);
             }
-            return success();
+            MyFile myFile = this.selectByKey(fileDto.getFileKey());
+            return success(myFile);
         }catch (Exception e){
             throw new FileException(ResultStatus.UPLOAD_FAILED,null);
         }
     }
+
 
     public void merge(FileDto fileDto) throws Exception {
         LOG.info("合并分片开始");
@@ -133,10 +137,28 @@ public class FileServiceImpl extends BaseController implements IFileService {
     }
 
     @Override
+    public Result checkFile(FileDto fileDto) {
+        LOG.info("上传检查开始");
+        String key = fileDto.getFileKey();
+        String type =  fileDto.getFileType();
+        String path =  fileDto.getPath();
+        QueryWrapper<MyFile> wrapper = new QueryWrapper<>();
+        wrapper.eq("file_key", fileDto.getFileKey());
+        wrapper.eq("name", fileDto.getName());
+        wrapper.eq("path", fileDto.getPath());
+        wrapper.eq("shard_index", fileDto.getShardIndex());
+        MyFile myFile = fileMapper.selectOne(wrapper);
+        if (StringUtils.checkValNull(myFile)) {
+            return success();
+        } else {
+            return failure(ResultStatus.UPLOAD_FILE_CHECK_ERROR);
+        }
+    }
+
+    @Override
+    @Transactional
     public void save(FileDto fileDto) {
         MyFile file = CopyUtil.copy(fileDto, MyFile.class);
-//        Wrapper wrapper = new Wrapper();
-//        wrapper.
         MyFile myFile = selectByKey(fileDto.getFileKey());
         if (myFile == null) {
             this.insert(file);
@@ -177,4 +199,36 @@ public class FileServiceImpl extends BaseController implements IFileService {
     public void delete(String id) {
         fileMapper.deleteById(id);
     }
+
+    @Override
+    public Result deleteFile(String id) {
+        QueryWrapper<MyFile> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",id);
+        MyFile myFile = fileMapper.selectOne(queryWrapper);
+        if (StringUtils.checkValNull(myFile)){
+            return failure(ResultStatus.FILE_NOT_EXIST);
+        }
+        String dirPath = FILE_PATH + myFile.getPath();
+        File delFile = new File(dirPath);
+        boolean flag = delFile.delete();
+        if (flag){
+            delete(id);
+            return success(myFile);
+        }else {
+            return failure(ResultStatus.DELETE_FILE_ERROR);
+        }
+    }
+
+    @Transactional
+    public void deleteTmpRecord(FileDto fileDto) {
+        QueryWrapper<MyFile> wrapper = new QueryWrapper<>();
+        wrapper.notIn("shard_index",fileDto.getShardTotal()).eq("file_key",fileDto.getFileKey());
+        List<MyFile> fileList = fileMapper.selectList(wrapper);
+        if (CollectionUtils.isEmpty(fileList)&&fileList.size()>1){
+            List<String> ids = fileList.stream().map(MyFile::getId).collect(Collectors.toList());
+            fileMapper.deleteBatchIds(ids);
+        }
+    }
+
+
 }

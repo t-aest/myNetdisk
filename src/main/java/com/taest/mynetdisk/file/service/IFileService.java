@@ -21,6 +21,8 @@ public interface IFileService {
 
     Result uploadFile(FileDto fileDto);
 
+    Result checkFile(FileDto fileDto);
+
     void save(FileDto fileDto);
 
     MyFile selectByKey(String key);
@@ -30,4 +32,6 @@ public interface IFileService {
     void update(MyFile file);
 
     void delete(String id);
+
+    Result deleteFile(String id);
 }
