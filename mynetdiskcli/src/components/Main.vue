@@ -53,8 +53,8 @@
               <el-button plain>
                 <i class="el-icon-tickets el-icon--left">&nbsp;新建文件</i>
               </el-button>
-              <el-button plain>
-                <i class="el-icon-refresh el-icon--left" @click="refresh">刷新</i>
+              <el-button  @click="refresh" plain>
+                <i class="el-icon-refresh el-icon--left">刷新</i>
               </el-button>
               <el-button plain>
                 <i class="el-icon-link el-icon--left">&nbsp;分享</i>
@@ -62,7 +62,7 @@
               <el-button plain>
                 <i class="el-icon-download el-icon--left">&nbsp;下载</i>
               </el-button>
-              <el-button plain>
+              <el-button @click="delFile(0)" plain>
                 <i class="el-icon-delete el-icon--left">&nbsp;删除</i>
               </el-button>
               <el-button plain>
@@ -80,6 +80,7 @@
             </el-breadcrumb>
             <el-table
               ref="multipleTable"
+              v-loading="loading"
               :data="tableData"
               tooltip-effect="dark"
               style="width: 100%"
@@ -144,7 +145,6 @@
 import Bus from '@/assets/js/bus'
 import {apiConfig} from '../request/api'
 import {FileTypes, Util} from '../assets/js/util'
-
 export default {
   name: 'HelloWorld',
   components: {},
@@ -153,7 +153,9 @@ export default {
       msg: 'display content',
       tabPosition: 'left',
       tableData: [],
-      showMoreOper: false
+      showMoreOper: false,
+      loading: false,
+      multipleSelection: []
     }
   },
   mounted () {
@@ -162,7 +164,6 @@ export default {
     Bus.$on('fileAdded', () => {
       console.log('文件已选择')
     })
-
     // 文件上传成功的回调
     Bus.$on('fileSuccess', (res) => {
       console.log('文件已sucess   ')
@@ -175,8 +176,9 @@ export default {
     dateString (date) {
       return Util.formatdate(date, 0)
     },
-    handleCommand (command) {
-      console.log('click on item ' + command)
+    handleSelectionChange (val) {
+      let self = this
+      self.multipleSelection = val
     },
     onMouseEnter (row, column, cell, event) {
       // eslint-disable-next-line no-unused-vars
@@ -193,33 +195,65 @@ export default {
       return FileTypes.getIconByType(scope.row.fileType)
     },
     // 刷新文件列表
-    refresh (scope) {
+    refresh () {
       this.list()
     },
     list (data) {
       let self = this
+      self.loading = true
       apiConfig.listFiles(data)
         .then(res => {
           console.log(res.data)
           self.tableData = res.data
+          self.loading = false
         }).catch(err => {
           console.log(err)
+          self.loading = false
         })
     },
     delFile (scope) {
       let self = this
-      apiConfig.delFile(scope.row.id)
-        .then(res => {
-          console.log(res)
-          if (res.code === 0) {
-            self.tableData.splice(scope.$index,1)
-            this.$message.success('删除成功！')
-          } else {
-            this.$message.success('删除失败！')
-          }
-        }).catch(err => {
-          console.log(err)
-        })
+      let val = self.multipleSelection
+      if (scope === 0) {
+        if (val) {
+          // 将选中数据遍历
+          val.forEach((va, index) => {
+            // 遍历源数据
+            self.tableData.forEach((v, i) => {
+              // 如果选中数据和源数据的某一条唯一标识符相等，删除对应的源数据
+              if (va.id === v.id) {
+                console.log(va)
+                self.tableData.splice(i, 1)
+                apiConfig.delFile(va.id)
+                  .then(res => {
+                    console.log(res)
+                    if (res.code === 0) {
+                      self.$message.success('file: ' + res.data.name + ' 删除成功！')
+                    } else {
+                      self.$message.error('file: ' + res.data.name + ' 删除失败！')
+                    }
+                  }).catch(err => {
+                    self.$message.error(err)
+                  })
+              }
+            })
+          })
+          self.$refs.multipleTable.clearSelection()
+        }
+      } else {
+        apiConfig.delFile(scope.row.id)
+          .then(res => {
+            console.log(res)
+            if (res.code === 0) {
+              self.tableData.splice(scope.$index, 1)
+              self.$message.success('删除成功！')
+            } else {
+              self.$message.error('删除失败！')
+            }
+          }).catch(err => {
+            self.$message.error(err)
+          })
+      }
     },
     upload () {
       // 打开文件选择框
