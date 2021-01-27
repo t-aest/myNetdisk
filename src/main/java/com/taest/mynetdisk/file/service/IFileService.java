@@ -4,6 +4,7 @@ import com.taest.mynetdisk.dto.FileDto;
 import com.taest.mynetdisk.file.entity.MyFile;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.taest.mynetdisk.response.Result;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -34,4 +35,6 @@ public interface IFileService {
     void delete(String id);
 
     Result deleteFile(String id);
+
+    Result mkdir(String parentId, String dirName);
 }

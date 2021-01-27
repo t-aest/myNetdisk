@@ -6,6 +6,7 @@ import com.taest.mynetdisk.file.entity.MyFile;
 import com.taest.mynetdisk.file.service.IFileService;
 import com.taest.mynetdisk.response.BaseController;
 import com.taest.mynetdisk.response.Result;
+import com.taest.mynetdisk.util.UuidUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +97,10 @@ public class FileController extends BaseController {
         return fileService.deleteFile(id);
     }
 
-
-
+    @ApiOperation(value = "创建文件夹",notes = "创建文件夹")
+    @PostMapping("/mkdir")
+    public Result mkdir(@RequestParam("parentId") String parentId,
+                        @RequestParam("filename") String dirName){
+        return fileService.mkdir(parentId,dirName);
+    }
 }

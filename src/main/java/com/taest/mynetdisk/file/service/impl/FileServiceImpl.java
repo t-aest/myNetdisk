@@ -225,6 +225,29 @@ public class FileServiceImpl extends BaseController implements IFileService {
         }
     }
 
+    @Override
+    public Result mkdir(String parentId, String dirName) {
+        FileDto fileDto = new FileDto();
+        String fileKey = UuidUtil.getUuid();
+        if (String.valueOf(0).equals(parentId)){
+            fileDto.setPath("");
+            fileDto.setParentId(parentId);
+            fileDto.setFileType("folder");
+        }
+        fileDto.setName(dirName);
+        fileDto.setFileKey(fileKey);
+        save(fileDto);
+        String dir_name = FILE_PATH + File.separator + dirName;
+        File driFile = new File(dir_name);
+        boolean mkdir = driFile.mkdir();
+        if (mkdir){
+            MyFile myFile = selectByKey(fileKey);
+            return success(myFile);
+        }else {
+            return failure(ResultStatus.REQUEST_VALIDATION_FAILED);
+        }
+    }
+
     public static void main(String[] args) {
         String a = "sdfasd";
         System.out.println(a.indexOf("/"));

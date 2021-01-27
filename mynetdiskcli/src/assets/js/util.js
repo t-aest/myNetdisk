@@ -15,7 +15,8 @@ export const FileTypes = {
   XMLTYPE: 'application/xml' || 'text/xml',
   ZIPTYPE: 'application/zip',
   UNKNOWTYPE: 'application/octet-stream',
-  getIconByType(fileType) {
+  FOLDER: 'folder',
+  getIconByType (fileType) {
     if (fileType === this.PDFTYPE) {
       return 'static/img/pdf-icon.png'
     } else if (fileType === this.TEXTTYPE) {
@@ -36,49 +37,51 @@ export const FileTypes = {
       return 'static/img/json-icon.png'
     } else if (fileType === this.MP3TYPE) {
       return 'static/img/mp3-icon.png'
-    }else if (fileType === this.MP4TYPE) {
+    } else if (fileType === this.MP4TYPE) {
       return 'static/img/mp4-icon.png'
-    }else if (fileType === this.PNGTYPE) {
+    } else if (fileType === this.PNGTYPE) {
       return 'static/img/png-icon.png'
-    }else if (fileType === this.XLSTYPE) {
+    } else if (fileType === this.XLSTYPE) {
       return 'static/img/txt-icon.png'
-    }else if (fileType === this.XMLTYPE) {
+    } else if (fileType === this.XMLTYPE) {
       return 'static/img/xml-icon.png'
-    }else if (fileType === this.ZIPTYPE) {
+    } else if (fileType === this.ZIPTYPE) {
       return 'static/img/zip-icon.png'
-    }else {
-      return 'static/img/unknown-icon.png';
+    } else if (fileType === this.FOLDER) {
+      return 'static/img/folder-icon.png'
+    } else {
+      return 'static/img/unknown-icon.png'
     }
   }
 }
 export const Util = {
   formatdate: function (dateString, type) {
     let date = new Date(dateString)
-    let year = date.getFullYear();
-    let month = addzero(date.getMonth() + 1);
-    let weekday = addzero(date.getDate());
-    let hour = addzero(date.getHours());
-    let minute = addzero(date.getMinutes());
-    let second = addzero(date.getSeconds());
+    let year = date.getFullYear()
+    let month = addzero(date.getMonth() + 1)
+    let weekday = addzero(date.getDate())
+    let hour = addzero(date.getHours())
+    let minute = addzero(date.getMinutes())
+    let second = addzero(date.getSeconds())
 
-    function addzero(value) {
+    function addzero (value) {
       if (value < 10) {
-        value = "0" + value;
+        value = '0' + value
       }
       return value
     }
 
     if (type == 1) {
-      return (year + "-" + month + "-" + weekday);
+      return (year + '-' + month + '-' + weekday)
     } else {
-      return (year + "-" + month + "-" + weekday + " " + hour + ":" + minute + ":" + second);
+      return (year + '-' + month + '-' + weekday + ' ' + hour + ':' + minute + ':' + second)
     }
   },
-  getIcon(fileType) {
+  getIcon (fileType) {
     if (fileType === 'text/plain') {
       return 'static/img/image-icon.png'
     } else {
       return 'el-icon-view'
     }
-  },
+  }
 }
