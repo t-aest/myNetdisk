@@ -63,15 +63,16 @@ public class FileServiceImpl extends BaseController implements IFileService {
         try {
             MultipartFile shard = fileDto.getFile();
             //如果文件夹不存在则创建
-            File file = new File(FILE_PATH);
-            if (!file.exists()){
-                file.mkdir();
-            }
+
             String loaclpath = new StringBuffer(path)
                     .append(".")
                     .append(fileDto.getShardIndex())
                     .toString();
             String fullPath = FILE_PATH+loaclpath;
+            File file = new File(fullPath).getParentFile();
+            if (!file.exists()){
+                file.mkdir();
+            }
             File dest = new File(fullPath);
             shard.transferTo(dest);
             LOG.info(dest.getAbsolutePath());
@@ -208,9 +209,14 @@ public class FileServiceImpl extends BaseController implements IFileService {
         if (StringUtils.checkValNull(myFile)){
             return failure(ResultStatus.FILE_NOT_EXIST);
         }
-        String dirPath = FILE_PATH + myFile.getPath();
+        String path = myFile.getPath();
+        String dirPath = FILE_PATH + path;
         File delFile = new File(dirPath);
         boolean flag = delFile.delete();
+        if (path.indexOf("/")>0){
+            File delParentFile = new File(dirPath).getParentFile();
+            delParentFile.delete();
+        }
         if (flag){
             delete(id);
             return success(myFile);
@@ -219,6 +225,10 @@ public class FileServiceImpl extends BaseController implements IFileService {
         }
     }
 
+    public static void main(String[] args) {
+        String a = "sdfasd";
+        System.out.println(a.indexOf("/"));
+    }
     @Transactional
     public void deleteTmpRecord(FileDto fileDto) {
         QueryWrapper<MyFile> wrapper = new QueryWrapper<>();

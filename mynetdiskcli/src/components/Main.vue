@@ -259,6 +259,7 @@ export default {
       // 打开文件选择框
       Bus.$emit('openUploader', {
         id: '1111',
+        fileType: '',
         parentId: 0// 传入的参数
       })
     },
