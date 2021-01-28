@@ -54,6 +54,17 @@ public class FileServiceImpl extends BaseController implements IFileService {
     }
 
     @Override
+    public List<MyFile> queryByParentId(String parentId) {
+        if (String.valueOf(0).equals(parentId)){
+            return fileMapper.selectList(null);
+        }else {
+            QueryWrapper<MyFile> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("parent_id", parentId);
+            return fileMapper.selectList(queryWrapper);
+        }
+    }
+
+    @Override
     @Transactional
     public Result uploadFile(FileDto fileDto) {
         LOG.info("上传文件开始");

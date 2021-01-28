@@ -20,6 +20,8 @@ public interface IFileService {
 
     List<MyFile> list();
 
+    List<MyFile> queryByParentId(String parentId);
+
     Result uploadFile(FileDto fileDto);
 
     Result checkFile(FileDto fileDto);

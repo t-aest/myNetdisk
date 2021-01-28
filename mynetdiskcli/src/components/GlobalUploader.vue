@@ -9,7 +9,7 @@
               @file-error="onFileError"
               class="uploader-app">
       <uploader-unsupport></uploader-unsupport>
-<!--      <uploader-btn id="global-uploader-btn" :attrs="attrs" ref="uploadBtn">选择文件</uploader-btn>-->
+      <uploader-btn id="global-uploader-btn" :attrs="attrs" ref="uploadBtn">选择文件</uploader-btn>
       <uploader-btn id="global-uploader-folder-btn" :attrs="attrs" ref="uploadFolderBtn" :directory="true" >选择文件夹</uploader-btn>
 <!--      <uploader-drop>-->
 <!--        <p>Drop files here to upload or</p>-->
@@ -73,6 +73,9 @@ export default {
       if (this.$refs.uploadBtn) {
         $('#global-uploader-btn').click()
       }
+    })
+    Bus.$on('openUploaderFolder', query => {
+      this.params = query || {}
       if (this.$refs.uploadFolderBtn) {
         $('#global-uploader-folder-btn').click()
       }
@@ -357,11 +360,11 @@ export default {
     clip: rect(0, 0, 0, 0);
   }
 
-  ///* 隐藏上传按钮 */
-  //#global-uploader-folder-btn {
-  //  position: absolute;
-  //  clip: rect(0, 0, 0, 0);
-  //}
+  /* 隐藏上传按钮 */
+  #global-uploader-folder-btn {
+    position: absolute;
+    clip: rect(0, 0, 0, 0);
+  }
 </style>
 
 <!--<style scoped>-->

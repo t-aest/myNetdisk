@@ -34,9 +34,9 @@ public class FileController extends BaseController {
     private IFileService fileService;
 
     @ApiOperation(value = "文件列表",notes = "文件列表查询")
-    @GetMapping("/files")
-    public Result list(){
-        List<MyFile> list = fileService.list();
+    @GetMapping("/files/{parentId}")
+    public Result list(@PathVariable("parentId") String parentId){
+        List<MyFile> list = fileService.queryByParentId(parentId);
         return success(list);
     }
 

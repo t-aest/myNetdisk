@@ -46,6 +46,7 @@
         <el-container>
           <el-main>
             <el-button @click="upload">上传</el-button>
+            <el-button @click="uploadFolder">上传文件夹</el-button>
             <el-button-group>
               <el-button plain>
                 <i class="el-icon-folder-add el-icon--left">&nbsp;新建文件夹</i>
@@ -96,25 +97,26 @@
                 prop="name"
                 min-width="200">
                 <template slot-scope="scope">
-                  <img :src="getIcon(scope)">&nbsp;
-                  <span>{{ scope.row.name }}</span>
-                  <div style="float: right;" class="more-oper" v-show="showMoreOper">
-                    <el-dropdown style="float: right;top: 9px">
+                  <div  @click="fileClick(scope)">
+                    <img :src="getIcon(scope)">&nbsp;
+                    <span>{{ scope.row.name }}</span>
+                    <div style="float: right;" class="more-oper" v-show="showMoreOper">
+                      <el-dropdown style="float: right;top: 9px">
                     <span class="el-dropdown-link"><i class="el-icon-more el-icon--right"></i>
                    </span>
-                      <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item>移动到</el-dropdown-item>
-                        <el-dropdown-item>复制到</el-dropdown-item>
-                        <el-dropdown-item>重命名</el-dropdown-item>
-                        <el-dropdown-item @click.native="delFile(scope)">删除</el-dropdown-item>
-                      </el-dropdown-menu>
-                    </el-dropdown>
-                    &nbsp;&nbsp;&nbsp;
-                    <el-button type="text" style="float: right" icon="el-icon-download"></el-button>
-                    &nbsp;
-                    <el-button type="text" style="float: right" icon="el-icon-share"></el-button>
+                        <el-dropdown-menu slot="dropdown">
+                          <el-dropdown-item>移动到</el-dropdown-item>
+                          <el-dropdown-item>复制到</el-dropdown-item>
+                          <el-dropdown-item>重命名</el-dropdown-item>
+                          <el-dropdown-item @click.native="delFile(scope)">删除</el-dropdown-item>
+                        </el-dropdown-menu>
+                      </el-dropdown>
+                      &nbsp;&nbsp;&nbsp;
+                      <el-button type="text" style="float: right" icon="el-icon-download"></el-button>
+                      &nbsp;
+                      <el-button type="text" style="float: right" icon="el-icon-share"></el-button>
+                    </div>
                   </div>
-
                 </template>
               </el-table-column>
               <el-table-column
@@ -155,11 +157,13 @@ export default {
       tableData: [],
       showMoreOper: false,
       loading: false,
-      multipleSelection: []
+      multipleSelection: [],
+      currentId: 0
     }
   },
   mounted () {
-    this.list()
+    let parentId = this.currentId
+    this.list(parentId)
     // 文件选择后的回调
     Bus.$on('fileAdded', () => {
       console.log('文件已选择')
@@ -175,6 +179,15 @@ export default {
   methods: {
     dateString (date) {
       return Util.formatdate(date, 0)
+    },
+    fileClick (scope) {
+      let self = this
+      if (scope.row.fileType === 'folder') {
+        self.currentId = scope.row.id
+        self.list(self.currentId)
+      } else {
+        console.log(scope)
+      }
     },
     handleSelectionChange (val) {
       let self = this
@@ -196,7 +209,7 @@ export default {
     },
     // 刷新文件列表
     refresh () {
-      this.list()
+      this.list(this.currentId)
     },
     list (data) {
       let self = this
@@ -258,6 +271,14 @@ export default {
     upload () {
       // 打开文件选择框
       Bus.$emit('openUploader', {
+        id: '1111',
+        fileType: '',
+        parentId: 0// 传入的参数
+      })
+    },
+    uploadFolder () {
+      // 打开文件选择框
+      Bus.$emit('openUploaderFolder', {
         id: '1111',
         fileType: '',
         parentId: 0// 传入的参数
