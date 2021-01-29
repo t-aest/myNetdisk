@@ -48,9 +48,10 @@
             <el-button @click="upload">上传</el-button>
             <el-button @click="uploadFolder">上传文件夹</el-button>
             <el-button-group>
-              <el-button plain>
-                <i class="el-icon-folder-add el-icon--left">&nbsp;新建文件夹</i>
-              </el-button>
+<!--              <el-button @click="createFolder" plain>-->
+<!--                <i class="el-icon-folder-add el-icon&#45;&#45;left">&nbsp;新建文件夹</i>-->
+<!--              </el-button>-->
+              <CreateFolder ref="createFolder" style="float: left" v-bind:paren-id="currentId" v-bind:after-create="afterCreate">新建文件夹</CreateFolder>
               <el-button plain>
                 <i class="el-icon-tickets el-icon--left">&nbsp;新建文件</i>
               </el-button>
@@ -147,9 +148,10 @@
 import Bus from '@/assets/js/bus'
 import {apiConfig} from '../request/api'
 import {FileTypes, Util} from '../assets/js/util'
+import CreateFolder from './CreateFolder'
 export default {
   name: 'HelloWorld',
-  components: {},
+  components: {CreateFolder},
   data () {
     return {
       msg: 'display content',
@@ -267,6 +269,10 @@ export default {
             self.$message.error(err)
           })
       }
+    },
+    afterCreate (resp) {
+      let self = this
+      self.tableData.push(resp)
     },
     upload () {
       // 打开文件选择框

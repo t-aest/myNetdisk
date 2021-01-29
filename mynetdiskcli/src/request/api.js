@@ -12,5 +12,6 @@ import { get, post, put, $delete } from '../request/request'
 export const apiConfig = {
   // 文件列表查询接口
   listFiles: data => get('file/files', data),
-  delFile: id => $delete('file/delFile', id)
+  delFile: id => $delete('file/delFile', id),
+  mkdir: params => post('file/mkdir', params)
 }
