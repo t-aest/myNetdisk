@@ -75,10 +75,14 @@
             </el-button-group>
 
             <el-breadcrumb separator-class="el-icon-arrow-right">
-              <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-              <el-breadcrumb-item>活动管理</el-breadcrumb-item>
-              <el-breadcrumb-item>活动列表</el-breadcrumb-item>
-              <el-breadcrumb-item>活动详情</el-breadcrumb-item>
+<!--              <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>-->
+              <el-breadcrumb-item @click.native="testBread(item)"
+                v-for="item in Breadcrumb"
+                :key="item.id"
+                :to="item.path"
+              >
+                {{item.name}}
+              </el-breadcrumb-item>
             </el-breadcrumb>
             <el-table
               ref="multipleTable"
@@ -160,7 +164,13 @@ export default {
       showMoreOper: false,
       loading: false,
       multipleSelection: [],
-      currentId: 0
+      currentId: 0,
+      Breadcrumb: [
+        {path: '/', parentId: 0, name: '首页'},
+        {path: '/', parentId: 0, name: 'aaa'},
+        {path: '/', parentId: 0, name: 'bbb'},
+        {path: '/', parentId: 0, name: 'ccc'}
+      ]
     }
   },
   mounted () {
@@ -182,11 +192,21 @@ export default {
     dateString (date) {
       return Util.formatdate(date, 0)
     },
+    testBread (item) {
+      let self = this
+      let index = self.Breadcrumb.indexOf(item)
+      console.log(self.Breadcrumb.indexOf(item))
+      console.log(self.Breadcrumb.slice(0, index + 1))
+      self.Breadcrumb = self.Breadcrumb.slice(0, index + 1)
+    },
     fileClick (scope) {
       let self = this
       if (scope.row.fileType === 'folder') {
+        // eslint-disable-next-line standard/object-curly-even-spacing
+        let bread = {path: '/', parentId: self.currentId, name: scope.row.name }
         self.currentId = scope.row.id
         self.list(self.currentId)
+        self.Breadcrumb.push(bread)
       } else {
         console.log(scope)
       }
@@ -314,11 +334,9 @@ export default {
 .el-dropdown + .el-dropdown {
   margin-left: 15px;
 }
-
 .el-icon-arrow-down {
   font-size: 12px;
 }
-
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
   min-height: 400px;
