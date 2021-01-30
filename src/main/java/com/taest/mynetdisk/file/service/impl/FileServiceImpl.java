@@ -91,7 +91,7 @@ public class FileServiceImpl extends BaseController implements IFileService {
             this.save(fileDto);
             if (fileDto.getShardIndex().equals(fileDto.getShardTotal())){
                 this.merge(fileDto);
-                this.deleteTmpRecord(fileDto);
+//                this.deleteTmpRecord(fileDto);
             }
             MyFile myFile = this.selectByKey(fileDto.getFileKey());
             return success(myFile);

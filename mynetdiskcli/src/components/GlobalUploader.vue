@@ -56,6 +56,7 @@ export default {
         testChunks: false,
         chunkSize: 50 * 1024,
         fileParameterName: 'uploadFile',
+        simultaneousUploads: 1,
         maxChunkRetries: 3,
         query () {
         }

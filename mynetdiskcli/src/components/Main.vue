@@ -6,7 +6,7 @@
           <el-menu-item disabled style="opacity:1" index="1">myNetdisk</el-menu-item>
           <el-menu-item index="2">网盘</el-menu-item>
           <el-menu-item index="3">通讯录</el-menu-item>
-          <el-menu-item index="3">历史记录</el-menu-item>
+          <el-menu-item index="4">历史记录</el-menu-item>
         </el-menu>
       </el-header>
       <el-container>
