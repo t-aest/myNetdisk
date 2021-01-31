@@ -52,6 +52,7 @@ public class FileController extends BaseController {
             @RequestParam("chunkSize") Integer shardSize,
             @RequestParam("totalChunks") Integer shardTotal,
             @RequestParam("identifier") String key,
+            @RequestParam(value = "folderId",required = false,defaultValue = "") String folderId,
             @RequestParam("uploadFile") MultipartFile uploadFile){
         FileDto fileDto = new FileDto();
         fileDto.setPath(path);
@@ -63,6 +64,7 @@ public class FileController extends BaseController {
         fileDto.setShardSize(shardSize);
         fileDto.setShardTotal(shardTotal);
         fileDto.setFileKey(key);
+        fileDto.setFolderId(folderId);
         fileDto.setFile(uploadFile);
         return fileService.uploadFile(fileDto);
     }

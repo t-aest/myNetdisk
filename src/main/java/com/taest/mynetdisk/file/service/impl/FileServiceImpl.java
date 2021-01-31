@@ -2,6 +2,7 @@ package com.taest.mynetdisk.file.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.taest.mynetdisk.dto.FileDto;
 import com.taest.mynetdisk.exception.file.FileException;
 import com.taest.mynetdisk.file.entity.MyFile;
@@ -11,6 +12,7 @@ import com.taest.mynetdisk.response.BaseController;
 import com.taest.mynetdisk.response.Result;
 import com.taest.mynetdisk.response.ResultStatus;
 import com.taest.mynetdisk.util.CopyUtil;
+import com.taest.mynetdisk.util.MyStringUtils;
 import com.taest.mynetdisk.util.UuidUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,13 +22,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.spring.web.json.Json;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -42,6 +47,8 @@ public class FileServiceImpl extends BaseController implements IFileService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileServiceImpl.class);
 
+    private static Map<String,MyFile> parentPathMap = new HashMap<>();
+
     @Value("${file.path}")
     private String FILE_PATH;
 
@@ -55,13 +62,9 @@ public class FileServiceImpl extends BaseController implements IFileService {
 
     @Override
     public List<MyFile> queryByParentId(String parentId) {
-        if (String.valueOf(0).equals(parentId)){
-            return fileMapper.selectList(null);
-        }else {
-            QueryWrapper<MyFile> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("parent_id", parentId);
-            return fileMapper.selectList(queryWrapper);
-        }
+        QueryWrapper<MyFile> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("parent_id", parentId);
+        return fileMapper.selectList(queryWrapper);
     }
 
     @Override
@@ -71,19 +74,17 @@ public class FileServiceImpl extends BaseController implements IFileService {
         String key = fileDto.getFileKey();
         String type =  fileDto.getFileType();
         String path =  fileDto.getPath();
+        String folderId =  fileDto.getFolderId();
+        MyFile resultFile = null;
         try {
             MultipartFile shard = fileDto.getFile();
             //如果文件夹不存在则创建
-
             String loaclpath = new StringBuffer(path)
                     .append(".")
                     .append(fileDto.getShardIndex())
                     .toString();
             String fullPath = FILE_PATH+loaclpath;
-            File file = new File(fullPath).getParentFile();
-            if (!file.exists()){
-                file.mkdir();
-            }
+            resultFile = getMyFile(fileDto, folderId, resultFile, fullPath);
             File dest = new File(fullPath);
             shard.transferTo(dest);
             LOG.info(dest.getAbsolutePath());
@@ -91,13 +92,36 @@ public class FileServiceImpl extends BaseController implements IFileService {
             this.save(fileDto);
             if (fileDto.getShardIndex().equals(fileDto.getShardTotal())){
                 this.merge(fileDto);
-//                this.deleteTmpRecord(fileDto);
             }
-            MyFile myFile = this.selectByKey(fileDto.getFileKey());
-            return success(myFile);
+            if (StringUtils.checkValNull(resultFile)){
+                resultFile = this.selectByKey(fileDto.getFileKey());
+            }
+            return success(resultFile);
         }catch (Exception e){
             throw new FileException(ResultStatus.UPLOAD_FAILED,null);
         }
+    }
+
+    private MyFile getMyFile(FileDto fileDto, String folderId, MyFile resultFile, String fullPath) {
+        if (MyStringUtils.isNotEmpty(folderId)){
+            if (parentPathMap.containsKey(folderId)) {
+                resultFile = parentPathMap.get(folderId);
+                fileDto.setParentId(resultFile.getId());
+            }else {
+                File file = new File(fullPath).getParentFile();
+                if (!file.exists()){
+                    Result result = mkdir(fileDto.getParentId(), file.getName());
+                    if (result.getCode()==0){
+                        ObjectMapper mapper = new ObjectMapper();
+                        MyFile dirFile = mapper.convertValue(result.getData(), MyFile.class);
+                        parentPathMap.put(folderId,dirFile);
+                        resultFile = dirFile;
+                        fileDto.setParentId(resultFile.getId());
+                    }
+                }
+            }
+        }
+        return resultFile;
     }
 
 
@@ -248,7 +272,7 @@ public class FileServiceImpl extends BaseController implements IFileService {
         fileDto.setName(dirName);
         fileDto.setFileKey(fileKey);
         save(fileDto);
-        String dir_name = FILE_PATH + File.separator + dirName;
+        String dir_name = FILE_PATH + File.separator  + dirName;
         File driFile = new File(dir_name);
         boolean mkdir = driFile.mkdir();
         if (mkdir){
@@ -260,8 +284,8 @@ public class FileServiceImpl extends BaseController implements IFileService {
     }
 
     public static void main(String[] args) {
-        String a = "sdfasd";
-        System.out.println(a.indexOf("/"));
+        File file = new File("/home/taest/tmp/50M");
+        System.out.println("file = " + file.getParentFile().getPath());
     }
     @Transactional
     public void deleteTmpRecord(FileDto fileDto) {

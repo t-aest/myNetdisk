@@ -153,6 +153,7 @@ import Bus from '@/assets/js/bus'
 import {apiConfig} from '../request/api'
 import {FileTypes, Util} from '../assets/js/util'
 import CreateFolder from './CreateFolder'
+import { v4 as uuidv4 } from 'uuid'
 export default {
   name: 'HelloWorld',
   components: {CreateFolder},
@@ -165,6 +166,7 @@ export default {
       loading: false,
       multipleSelection: [],
       currentId: 0,
+      parentPath: '',
       Breadcrumb: [
         {path: '/', parentId: 0, name: '首页'},
         {path: '/', parentId: 0, name: 'aaa'},
@@ -182,9 +184,12 @@ export default {
     })
     // 文件上传成功的回调
     Bus.$on('fileSuccess', (res) => {
+      let self = this
       console.log('文件已sucess   ')
-      this.tableData.push(res.data)
-      console.log(res)
+      console.log(self.tableData.indexOf(res.data) === -1)
+      if (Util.index++ === -1) {
+        self.tableData.push(res.data)
+      }
     })
   },
   computed: {},
@@ -299,14 +304,19 @@ export default {
       Bus.$emit('openUploader', {
         id: '1111',
         fileType: '',
+        parentPath: this.parentPath,
         parentId: 0// 传入的参数
       })
     },
     uploadFolder () {
+      console.log('uploadFolder')
+      Util.index = -1
       // 打开文件选择框
       Bus.$emit('openUploaderFolder', {
         id: '1111',
-        fileType: '',
+        fileType: 'folder',
+        parentPath: this.parentPath,
+        folderId: uuidv4().replaceAll('-', ''),
         parentId: 0// 传入的参数
       })
     },

@@ -82,6 +82,8 @@ public class FileDto {
      */
     private MultipartFile file;
 
+    private String folderId;
+
 
 
 }
