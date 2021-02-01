@@ -168,10 +168,7 @@ export default {
       currentId: 0,
       parentPath: '',
       Breadcrumb: [
-        {path: '/', parentId: 0, name: '首页'},
-        {path: '/', parentId: 0, name: 'aaa'},
-        {path: '/', parentId: 0, name: 'bbb'},
-        {path: '/', parentId: 0, name: 'ccc'}
+        {path: '/', parentId: 0, name: '首页'}
       ]
     }
   },
@@ -198,11 +195,14 @@ export default {
       return Util.formatdate(date, 0)
     },
     testBread (item) {
+      console.log(item)
       let self = this
       let index = self.Breadcrumb.indexOf(item)
       console.log(self.Breadcrumb.indexOf(item))
       console.log(self.Breadcrumb.slice(0, index + 1))
       self.Breadcrumb = self.Breadcrumb.slice(0, index + 1)
+      self.list(item.parentId)
+      self.currentId = item.parentId
     },
     fileClick (scope) {
       let self = this
@@ -305,7 +305,7 @@ export default {
         id: '1111',
         fileType: '',
         parentPath: this.parentPath,
-        parentId: 0// 传入的参数
+        parentId: this.currentId// 传入的参数
       })
     },
     uploadFolder () {
@@ -317,7 +317,7 @@ export default {
         fileType: 'folder',
         parentPath: this.parentPath,
         folderId: uuidv4().replaceAll('-', ''),
-        parentId: 0// 传入的参数
+        parentId: this.currentId// 传入的参数
       })
     },
     destroyed () {

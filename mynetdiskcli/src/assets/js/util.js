@@ -55,6 +55,7 @@ export const FileTypes = {
   }
 }
 export const Util = {
+  index: -1,
   formatdate: function (dateString, type) {
     let date = new Date(dateString)
     let year = date.getFullYear()
