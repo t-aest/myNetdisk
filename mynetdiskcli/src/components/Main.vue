@@ -48,14 +48,16 @@
             <el-button @click="upload">上传</el-button>
             <el-button @click="uploadFolder">上传文件夹</el-button>
             <el-button-group>
-<!--              <el-button @click="createFolder" plain>-->
-<!--                <i class="el-icon-folder-add el-icon&#45;&#45;left">&nbsp;新建文件夹</i>-->
-<!--              </el-button>-->
-              <CreateFolder ref="createFolder" style="float: left" v-bind:paren-id="currentId" v-bind:after-create="afterCreate">新建文件夹</CreateFolder>
+              <!--              <el-button @click="createFolder" plain>-->
+              <!--                <i class="el-icon-folder-add el-icon&#45;&#45;left">&nbsp;新建文件夹</i>-->
+              <!--              </el-button>-->
+              <CreateFolder ref="createFolder" style="float: left" v-bind:paren-id="currentId"
+                            v-bind:after-create="afterCreate">新建文件夹
+              </CreateFolder>
               <el-button plain>
                 <i class="el-icon-tickets el-icon--left">&nbsp;新建文件</i>
               </el-button>
-              <el-button  @click="refresh" plain>
+              <el-button @click="refresh" plain>
                 <i class="el-icon-refresh el-icon--left">刷新</i>
               </el-button>
               <el-button plain>
@@ -75,13 +77,13 @@
             </el-button-group>
 
             <el-breadcrumb separator-class="el-icon-arrow-right">
-<!--              <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>-->
+              <!--              <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>-->
               <el-breadcrumb-item @click.native="testBread(item)"
-                v-for="item in Breadcrumb"
-                :key="item.id"
-                :to="item.path"
+                                  v-for="item in Breadcrumb"
+                                  :key="item.id"
+                                  :to="item.path"
               >
-                {{item.name}}
+                {{ item.name }}
               </el-breadcrumb-item>
             </el-breadcrumb>
             <el-table
@@ -102,7 +104,7 @@
                 prop="name"
                 min-width="200">
                 <template slot-scope="scope">
-                  <div  @click="fileClick(scope)">
+                  <div @click="fileClick(scope)">
                     <img :src="getIcon(scope)">&nbsp;
                     <span>{{ scope.row.name }}</span>
                     <div style="float: right;" class="more-oper" v-show="showMoreOper">
@@ -117,7 +119,8 @@
                         </el-dropdown-menu>
                       </el-dropdown>
                       &nbsp;&nbsp;&nbsp;
-                      <el-button type="text" style="float: right" icon="el-icon-download"></el-button>
+                      <el-button @click="download(scope.row.id)" type="text" style="float: right"
+                                 icon="el-icon-download"></el-button>
                       &nbsp;
                       <el-button type="text" style="float: right" icon="el-icon-share"></el-button>
                     </div>
@@ -153,7 +156,8 @@ import Bus from '@/assets/js/bus'
 import {apiConfig} from '../request/api'
 import {FileTypes, Util} from '../assets/js/util'
 import CreateFolder from './CreateFolder'
-import { v4 as uuidv4 } from 'uuid'
+import {v4 as uuidv4} from 'uuid'
+
 export default {
   name: 'HelloWorld',
   components: {CreateFolder},
@@ -208,7 +212,7 @@ export default {
       let self = this
       if (scope.row.fileType === 'folder') {
         // eslint-disable-next-line standard/object-curly-even-spacing
-        let bread = {path: '/', parentId: self.currentId, name: scope.row.name }
+        let bread = {path: '/', parentId: self.currentId, name: scope.row.name}
         self.currentId = scope.row.id
         self.list(self.currentId)
         self.Breadcrumb.push(bread)
@@ -295,6 +299,16 @@ export default {
           })
       }
     },
+    download (id) {
+      let url = '/api/file/download/' + id
+      window.open(url)
+      // apiConfig.download(id)
+      //   .then(res => {
+      //   }).catch(err => {
+      //     console.log(err)
+      //     self.loading = false
+      //   })
+    },
     afterCreate (resp) {
       let self = this
       self.tableData.push(resp)
@@ -344,9 +358,11 @@ export default {
 .el-dropdown + .el-dropdown {
   margin-left: 15px;
 }
+
 .el-icon-arrow-down {
   font-size: 12px;
 }
+
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
   min-height: 400px;

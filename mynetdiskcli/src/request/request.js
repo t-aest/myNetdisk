@@ -8,11 +8,11 @@ import router from '../router/index' // 配合路由守卫，进行拦截
  环境的切换
  */
 if (process.env.NODE_ENV === 'development') { // 开发环境
-  axios.defaults.baseURL = 'http://localhost:8096/api/' // 测试接口
+  axios.defaults.baseURL = '/api' // 测试接口
 } else if (process.env.NODE_ENV === 'test') { // 测试环境
-  axios.defaults.baseURL = 'http://localhost:8096/api/' // 测试接口
+  axios.defaults.baseURL = '/api' // 测试接口
 } else if (process.env.NODE_ENV === 'production') { // 线上环境
-  axios.defaults.baseURL = 'http://localhost:8096/api/' // 测试接口
+  axios.defaults.baseURL = '/api' // 测试接口
 }
 
 // 请求超时时间 10S
