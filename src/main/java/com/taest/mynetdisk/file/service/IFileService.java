@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.taest.mynetdisk.response.Result;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -39,4 +40,6 @@ public interface IFileService {
     Result deleteFile(String id);
 
     Result mkdir(String parentId, String dirName);
+
+    Object download(String id, HttpServletResponse response);
 }

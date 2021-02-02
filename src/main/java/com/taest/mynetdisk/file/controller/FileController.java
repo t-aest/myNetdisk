@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -33,14 +35,14 @@ public class FileController extends BaseController {
     @Autowired
     private IFileService fileService;
 
-    @ApiOperation(value = "文件列表",notes = "文件列表查询")
+    @ApiOperation(value = "文件列表", notes = "文件列表查询")
     @GetMapping("/files/{parentId}")
-    public Result list(@PathVariable("parentId") String parentId){
+    public Result list(@PathVariable("parentId") String parentId) {
         List<MyFile> list = fileService.queryByParentId(parentId);
         return success(list);
     }
 
-    @ApiOperation(value = "文件上传",notes = "文件上传")
+    @ApiOperation(value = "文件上传", notes = "文件上传")
     @PostMapping("/upload")
     public Object upload(
             @RequestParam("relativePath") String path,
@@ -52,8 +54,8 @@ public class FileController extends BaseController {
             @RequestParam("chunkSize") Integer shardSize,
             @RequestParam("totalChunks") Integer shardTotal,
             @RequestParam("identifier") String key,
-            @RequestParam(value = "folderId",required = false,defaultValue = "") String folderId,
-            @RequestParam("uploadFile") MultipartFile uploadFile){
+            @RequestParam(value = "folderId", required = false, defaultValue = "") String folderId,
+            @RequestParam("uploadFile") MultipartFile uploadFile) {
         FileDto fileDto = new FileDto();
         fileDto.setPath(path);
         fileDto.setName(name);
@@ -93,16 +95,25 @@ public class FileController extends BaseController {
 //        fileDto.setFileKey(key);
 //        return fileService.checkFile(fileDto);
 //    }
-    @ApiOperation(value = "文件删除",notes = "删除选择的文件")
+
+
+    @ApiOperation(value = "文件下载", notes = "文件下载")
+    @GetMapping("/download/{id}")
+    public Object mkdir(@PathVariable("id") String fileId, HttpServletResponse response) {
+        return fileService.download(fileId,response);
+
+    }
+
+    @ApiOperation(value = "文件删除", notes = "删除选择的文件")
     @DeleteMapping("/delFile/{id}")
-    public Result delFile(@PathVariable("id") String id){
+    public Result delFile(@PathVariable("id") String id) {
         return fileService.deleteFile(id);
     }
 
-    @ApiOperation(value = "创建文件夹",notes = "创建文件夹")
+    @ApiOperation(value = "创建文件夹", notes = "创建文件夹")
     @PostMapping("/mkdir")
     public Result mkdir(@RequestParam("parentId") String parentId,
-                        @RequestParam("filename") String dirName){
-        return fileService.mkdir(parentId,dirName);
+                        @RequestParam("filename") String dirName) {
+        return fileService.mkdir(parentId, dirName);
     }
 }

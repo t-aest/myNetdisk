@@ -24,10 +24,9 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.spring.web.json.Json;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -281,6 +280,35 @@ public class FileServiceImpl extends BaseController implements IFileService {
         }else {
             return failure(ResultStatus.REQUEST_VALIDATION_FAILED);
         }
+    }
+
+    @Override
+    public Object download(String id, HttpServletResponse response) {
+        QueryWrapper<MyFile> wrapper = new QueryWrapper<>();
+        wrapper.eq("id", id);
+        MyFile myFile = fileMapper.selectOne(wrapper);
+        String downloadPath = FILE_PATH + myFile.getPath();
+        File downloadFile = new File(downloadPath);
+        if (!downloadFile.exists()){
+            return failure(ResultStatus.FILE_NOT_EXIST);
+        }
+        response.reset();
+        response.setContentType("application/octet-stream");
+        response.setCharacterEncoding("utf-8");
+        response.setContentLength((int) downloadFile.length());
+        response.setHeader("Content-Disposition", "attachment;filename=" + downloadFile.getName() );
+        try(BufferedInputStream bis = new BufferedInputStream(new FileInputStream(downloadFile));){
+            byte[] buff = new byte[1024];
+            OutputStream os = response.getOutputStream();
+            int i = 0;
+            while ((i = bis.read(buff)) !=-1){
+                os.write(buff,0,i);
+                os.flush();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static void main(String[] args) {
