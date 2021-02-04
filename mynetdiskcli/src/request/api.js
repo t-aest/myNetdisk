@@ -13,5 +13,6 @@ export const apiConfig = {
   // 文件列表查询接口
   listFiles: data => get('file/files', data),
   delFile: id => $delete('file/delFile', id),
-  mkdir: params => post('file/mkdir', params)
+  mkdir: params => post('file/mkdir', params),
+  download: id => get('file/download', id)
 }

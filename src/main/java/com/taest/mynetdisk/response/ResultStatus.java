@@ -18,6 +18,7 @@ public enum ResultStatus {
     RESOURCE_NOT_FOUND(1001, HttpStatus.NOT_FOUND, "未找到该资源"),
     REQUEST_VALIDATION_FAILED(1002, HttpStatus.BAD_REQUEST, "请求数据格式验证失败"),
     UPLOAD_FAILED(1003, HttpStatus.INTERNAL_SERVER_ERROR, "上传失败"),
+    DOWNLOAD_FAILED(1010, HttpStatus.INTERNAL_SERVER_ERROR, "下载失败"),
     UPLOAD_SUCCESS(1004, HttpStatus.CREATED, "上传成功"),
     UPLOAD_FILE_EXISTS(1005, HttpStatus.CREATED, "文件已存在"),
     UPLOAD_FILE_CHECK_ERROR(1006, HttpStatus.INTERNAL_SERVER_ERROR, "文件验证失败"),

@@ -1,11 +1,8 @@
-package com.taest.mynetdisk.file.entity;
+package com.taest.mynetdisk.bussiness.file.entity;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+
+import java.util.Date;
 
 /**
  * <p>
