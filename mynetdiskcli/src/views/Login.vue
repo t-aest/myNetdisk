@@ -10,7 +10,7 @@
       </el-form-item>
       <el-form-item label="验证码">
         <el-input style="float: left;width: 200px" v-model="form.code"></el-input>
-        <img style="float:left;padding-top: 10px;padding-left: 20px" src="static/img/folder-icon.png"/>
+        <img style="float:left;padding-left: 20px" @click="loadImageCode()" id="image-code" alt="验证码"/>
       </el-form-item>
       <el-form-item label="" style="text-align: center">
         <el-checkbox-group v-model="form.type">
@@ -31,6 +31,8 @@
 </template>
 
 <script>
+import {Util} from '../assets/js/util'
+import $ from 'jquery'
 export default {
   name: 'Login',
   data () {
@@ -43,6 +45,7 @@ export default {
         delivery: false,
         type: [],
         resource: '',
+        srcCode: '',
         desc: ''
       },
       rules: {
@@ -84,11 +87,15 @@ export default {
       }
     }
   },
+  mounted () {
+    let self = this
+    self.loadImageCode()
+  },
   methods: {
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert('submit!')
+          this.$router.push('/main')
         } else {
           console.log('error submit!!')
           return false
@@ -97,6 +104,14 @@ export default {
     },
     resetForm (formName) {
       this.$refs[formName].resetFields()
+    },
+    /**
+     * 加载图形验证码
+     */
+    loadImageCode: function () {
+      let self = this
+      self.imageCodeToken = Util.uuid(8)
+      $('#image-code').attr('src', '/api/kaptcha/image-code/' + self.imageCodeToken)
     }
   }
 }
