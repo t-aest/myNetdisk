@@ -15,7 +15,7 @@ import com.taest.mynetdisk.response.BaseController;
  * @since 2021-02-04
  */
 @RestController
-@RequestMapping("/my-user")
+@RequestMapping("/user")
 public class MyUserController extends BaseController {
 
 }
