@@ -72,7 +72,7 @@ export const Util = {
       return value
     }
 
-    if (type == 1) {
+    if (type === 1) {
       return (year + '-' + month + '-' + weekday)
     } else {
       return (year + '-' + month + '-' + weekday + ' ' + hour + ':' + minute + ':' + second)
@@ -84,5 +84,66 @@ export const Util = {
     } else {
       return 'el-icon-view'
     }
-  }
+  },
+  /**
+   * 空校验 null或""都返回true
+   */
+  isEmpty (obj) {
+    if ((typeof obj === 'string')) {
+      return !obj || obj.replace(/\s+/g, '') === ''
+    } else {
+      return (!obj || JSON.stringify(obj) === '{}' || obj.length === 0)
+    }
+  },
+  /**
+   * 移除对象数组中的对象
+   * @param array
+   * @param obj
+   * @returns {number}
+   */
+  removeObj (array, obj) {
+    let index = -1
+    for (let i = 0; i < array.length; i++) {
+      if (array[i] === obj) {
+        array.splice(i, 1)
+        index = i
+        break
+      }
+    }
+    return index
+  },
+  /**
+   * 10进制转62进制
+   * @param number
+   * @returns {string}
+   * @private
+   */
+  _10to62 (number) {
+    let chars = '0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ'
+    let radix = chars.length
+    let arr = []
+    do {
+      let mod = number % radix
+      number = (number - mod) / radix
+      arr.unshift(chars[mod])
+    } while (number)
+    return arr.join('')
+  },
+  /**
+   * 随机生成[len]长度的[radix]进制数
+   * @param len
+   * @param radix 默认62
+   * @returns {string}
+   */
+  uuid (len, radix) {
+    let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('')
+    let uuid = []
+    radix = radix || chars.length
+
+    for (let i = 0; i < len; i++) {
+      uuid[i] = chars[0 | Math.random() * radix]
+    }
+
+    return uuid.join('')
+  },
 }

@@ -13,10 +13,12 @@ import lombok.EqualsAndHashCode;
  * @since 2021-02-04
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
 public class MyUser implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+
+    private String id;
 
     /**
      * 登陆名
