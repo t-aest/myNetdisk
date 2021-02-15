@@ -25,7 +25,8 @@ public enum ResultStatus {
     DELETE_FILE_ERROR(1007, HttpStatus.INTERNAL_SERVER_ERROR, "文件删除失败"),
     FILE_NOT_EXIST(1008, HttpStatus.INTERNAL_SERVER_ERROR, "文件不存在"),
     FOLDER_CREATE_ERROR(1009, HttpStatus.INTERNAL_SERVER_ERROR, "文件夹创建失败"),
-    USER_NOT_EXIST(1011, HttpStatus.INTERNAL_SERVER_ERROR, "用户名不存在");
+    FILE_SECOND_PASS(1011, HttpStatus.OK, "文件秒传"),
+    FILE_BREAKPOINT_UPLOAD(1012, HttpStatus.OK, "断点续传");
 
     private Integer code;
     private String message;

@@ -19,6 +19,13 @@ public abstract class BaseController {
         return result;
     }
 
+    protected static Result success(ResultStatus resultStatus){
+        Result result = new Result();
+        result.setCode(resultStatus.getCode());
+        result.setMessage(resultStatus.getMessage());
+        return result;
+    }
+
     protected static Result failure(ResultStatus resultStatus){
         Result result = new Result();
         result.setCode(resultStatus.getCode());
