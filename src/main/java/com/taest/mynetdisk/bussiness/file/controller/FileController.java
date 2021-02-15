@@ -67,30 +67,30 @@ public class FileController extends BaseController {
         return fileService.uploadFile(fileDto);
     }
 
-//    @ApiOperation(value = "分片检查",notes = "文件上传之前的分片检查")
-//    @GetMapping("/upload")
-//    public Object check(
-//            @RequestParam("relativePath") String path,
-//            @RequestParam("filename") String name,
-//            @RequestParam("parentId") String parentId,
-//            @RequestParam("fileType") String fileType,
-//            @RequestParam("totalSize") Integer fileSize,
-//            @RequestParam("chunkNumber") Integer shardIndex,
-//            @RequestParam("chunkSize") Integer shardSize,
-//            @RequestParam("totalChunks") Integer shardTotal,
-//            @RequestParam("identifier") String key){
-//        FileDto fileDto = new FileDto();
-//        fileDto.setPath(path);
-//        fileDto.setName(name);
-//        fileDto.setParentId(parentId);
-//        fileDto.setFileType(fileType);
-//        fileDto.setFileSize(fileSize);
-//        fileDto.setShardIndex(shardIndex);
-//        fileDto.setShardSize(shardSize);
-//        fileDto.setShardTotal(shardTotal);
-//        fileDto.setFileKey(key);
-//        return fileService.checkFile(fileDto);
-//    }
+    @ApiOperation(value = "分片检查",notes = "文件上传之前的分片检查")
+    @GetMapping("/upload")
+    public Object check(
+            @RequestParam("relativePath") String path,
+            @RequestParam("filename") String name,
+            @RequestParam("parentId") String parentId,
+            @RequestParam("fileType") String fileType,
+            @RequestParam("totalSize") Integer fileSize,
+            @RequestParam("chunkNumber") Integer shardIndex,
+            @RequestParam("chunkSize") Integer shardSize,
+            @RequestParam("totalChunks") Integer shardTotal,
+            @RequestParam("identifier") String key){
+        FileDto fileDto = new FileDto();
+        fileDto.setPath(path);
+        fileDto.setName(name);
+        fileDto.setParentId(parentId);
+        fileDto.setFileType(fileType);
+        fileDto.setFileSize(fileSize);
+        fileDto.setShardIndex(shardIndex);
+        fileDto.setShardSize(shardSize);
+        fileDto.setShardTotal(shardTotal);
+        fileDto.setFileKey(key);
+        return fileService.checkFile(fileDto);
+    }
 
 
     @ApiOperation(value = "文件下载", notes = "文件下载")

@@ -1,5 +1,6 @@
 package com.taest.mynetdisk.bussiness.file.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,6 +13,7 @@ import com.taest.mynetdisk.response.BaseController;
 import com.taest.mynetdisk.response.Result;
 import com.taest.mynetdisk.response.ResultStatus;
 import com.taest.mynetdisk.util.CopyUtil;
+import com.taest.mynetdisk.util.MyObjectUtils;
 import com.taest.mynetdisk.util.MyStringUtils;
 import com.taest.mynetdisk.util.UuidUtil;
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -54,14 +57,24 @@ public class FileServiceImpl extends BaseController implements IFileService {
 
     @Override
     public List<MyFile> list() {
-        return fileMapper.selectList(null);
+        List<MyFile> myFileList = fileMapper.selectList(null);
+        myFileList = myFileList
+                .stream()
+                .filter(myFile -> myFile.getShardIndex().equals(myFile.getShardTotal()))
+                .collect(Collectors.toList());
+        return myFileList;
     }
 
     @Override
     public List<MyFile> queryByParentId(String parentId) {
         QueryWrapper<MyFile> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("parent_id", parentId);
-        return fileMapper.selectList(queryWrapper);
+        List<MyFile> myFileList = fileMapper.selectList(queryWrapper);
+        myFileList = myFileList
+                .stream()
+                .filter(myFile -> myFile.getShardIndex().equals(myFile.getShardTotal()))
+                .collect(Collectors.toList());
+        return myFileList;
     }
 
     @Override
@@ -90,7 +103,7 @@ public class FileServiceImpl extends BaseController implements IFileService {
             if (fileDto.getShardIndex().equals(fileDto.getShardTotal())){
                 this.merge(fileDto);
             }
-            if (StringUtils.checkValNull(resultFile)){
+            if (MyObjectUtils.isEmpty(resultFile)){
                 resultFile = this.selectByKey(fileDto.getFileKey());
             }
             return success(resultFile);
@@ -179,12 +192,13 @@ public class FileServiceImpl extends BaseController implements IFileService {
         wrapper.eq("file_key", fileDto.getFileKey());
         wrapper.eq("name", fileDto.getName());
         wrapper.eq("path", fileDto.getPath());
-        wrapper.eq("shard_index", fileDto.getShardIndex());
         MyFile myFile = fileMapper.selectOne(wrapper);
-        if (StringUtils.checkValNull(myFile)) {
+        if (MyObjectUtils.isEmpty(myFile)) {
             return success();
+        } else if (myFile.getShardIndex().equals(myFile.getShardTotal())){
+            return success(ResultStatus.FILE_SECOND_PASS);
         } else {
-            return failure(ResultStatus.UPLOAD_FILE_CHECK_ERROR);
+            return success(ResultStatus.FILE_BREAKPOINT_UPLOAD);
         }
     }
 

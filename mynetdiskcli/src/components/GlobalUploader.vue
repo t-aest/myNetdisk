@@ -53,11 +53,23 @@ export default {
       options: {
         // https://github.com/simple-uploader/Uploader/tree/develop/samples/Node.js
         target: 'http://localhost:8096/api/file/upload',
-        testChunks: false,
+        testChunks: true,
         chunkSize: 50 * 1024,
         fileParameterName: 'uploadFile',
         simultaneousUploads: 1,
         maxChunkRetries: 3,
+        // 服务器分片校验函数，秒传及断点续传基础
+        checkChunkUploadedByResponse: function (chunk, message) {
+          let res = JSON.parse(message)
+          // console.log(res)
+          if (res.code === 1011) {
+            return true
+          } else if (res.code === 1012) {
+
+          } else {
+            return (res.uploaded || []).indexOf(chunk.offset + 1) >= 0
+          }
+        },
         query () {
         }
       },
@@ -100,12 +112,20 @@ export default {
     onFileSuccess (rootFile, file, response, chunk) {
       let res = JSON.parse(response)
       // 服务器自定义的错误（即虽返回200，但是是错误的情况），这种错误是Uploader无法拦截的
-      if (res.code !== 0) {
+      if (res.code === 0) {
+        this.$message({ message: '上传成功', type: 'success' })
+      } else if (res.code === 1011) {
+        this.$message({ message: '极速秒传成功', type: 'success' })
+      } else if (res.code === 1012) {
+        this.$message({ message: '上传成功', type: 'success' })
+      } else {
         this.$message({ message: res.message, type: 'error' })
         // 文件状态设为“失败”
         this.statusSet(file.id, 'failed')
         return
       }
+      Bus.$emit('fileSuccess', res)
+      this.statusSet(file.id, 'success')
       // // 如果服务端返回需要合并
       // if (res.needMerge) {
       //   // 文件状态设为“合并中”
@@ -121,9 +141,7 @@ export default {
       //   }).catch(e => {});
       //   // 不需要合并
       // } else {
-      Bus.$emit('fileSuccess', res)
-      this.statusSet(file.id, 'success')
-      console.log('上传成功')
+
       // }
     },
     onFileError (rootFile, file, response, chunk) {
@@ -185,6 +203,7 @@ export default {
       console.log('dfddddddddddddddddddd-------')
       console.log(file)
       this.params.fileType = file.fileType
+      file.relativePath = this.params.parentPath + '/' + file.relativePath
       // 将自定义参数直接加载uploader实例的opts上
       Object.assign(this.uploader.opts, {
         query: {
