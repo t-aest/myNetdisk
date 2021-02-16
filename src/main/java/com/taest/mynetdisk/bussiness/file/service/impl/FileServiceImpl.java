@@ -60,7 +60,7 @@ public class FileServiceImpl extends BaseController implements IFileService {
         List<MyFile> myFileList = fileMapper.selectList(null);
         myFileList = myFileList
                 .stream()
-                .filter(myFile -> myFile.getShardIndex().equals(myFile.getShardTotal()))
+                .filter(myFile -> myFile.getShardIndex()==null|| myFile.getShardIndex().equals(myFile.getShardTotal()))
                 .collect(Collectors.toList());
         return myFileList;
     }
@@ -72,7 +72,7 @@ public class FileServiceImpl extends BaseController implements IFileService {
         List<MyFile> myFileList = fileMapper.selectList(queryWrapper);
         myFileList = myFileList
                 .stream()
-                .filter(myFile -> myFile.getShardIndex().equals(myFile.getShardTotal()))
+                .filter(myFile -> myFile.getShardIndex()==null|| myFile.getShardIndex().equals(myFile.getShardTotal()))
                 .collect(Collectors.toList());
         return myFileList;
     }

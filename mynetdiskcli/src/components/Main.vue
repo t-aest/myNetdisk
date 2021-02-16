@@ -188,8 +188,17 @@ export default {
       let self = this
       console.log('文件已sucess   ')
       console.log(self.tableData.indexOf(res.data) === -1)
-      if (Util.index++ === -1) {
-        self.tableData.push(res.data)
+      console.log(res.data)
+      let shardIndex = res.data.shardIndex
+      let shardTotal = res.data.shardTotal
+      if (res.data.fileType !== 'folder') {
+        if (shardIndex === shardTotal) {
+          self.tableData.push(res.data)
+        }
+      } else {
+        if (Util.index++ === -1) {
+          self.tableData.push(res.data)
+        }
       }
     })
   },
