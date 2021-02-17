@@ -172,7 +172,7 @@ export default {
       currentId: 0,
       parentPath: '',
       Breadcrumb: [
-        {path: '/', parentId: 0, name: '首页'}
+        {path: '/main', parentId: 0, name: '首页'}
       ]
     }
   },
