@@ -2,6 +2,8 @@ package com.taest.mynetdisk.bussiness.user.controller;
 
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.CircleCaptcha;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +20,9 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/kaptcha")
 public class KaptchaController {
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @GetMapping("/image-code/{imageCodeToken}")
     public void imageCode(@PathVariable(value = "imageCodeToken") String imageCodeToken, HttpServletRequest request, HttpServletResponse httpServletResponse) throws Exception {
         try {
@@ -27,6 +32,7 @@ public class KaptchaController {
             //图形验证码写出，可以写出到文件，也可以写出到流
             captcha.write(httpServletResponse.getOutputStream());
             System.out.println("captcha = " + captcha.getCode());
+            redisTemplate.opsForValue().set(imageCodeToken,captcha.getCode(),300,TimeUnit.SECONDS);
             //验证图形验证码的有效性，返回boolean值
 //            captcha.verify("1234");
         } catch (IllegalArgumentException e) {
