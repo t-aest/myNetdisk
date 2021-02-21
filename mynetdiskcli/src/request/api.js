@@ -14,5 +14,6 @@ export const apiConfig = {
   listFiles: data => get('file/files', data),
   delFile: id => $delete('file/delFile', id),
   mkdir: params => post('file/mkdir', params),
-  download: id => get('file/download', id)
+  download: id => get('file/download', id),
+  login: params => post('user/login', params, 'json')
 }
