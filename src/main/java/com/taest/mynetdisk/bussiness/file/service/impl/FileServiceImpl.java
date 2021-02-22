@@ -209,9 +209,11 @@ public class FileServiceImpl extends BaseController implements IFileService {
         MyFile myFile = selectByKey(fileDto.getFileKey());
         if (myFile == null) {
             this.insert(file);
-        } else {
+        } else if (myFile.getPath().equals(fileDto.getPath())){
             myFile.setShardIndex(fileDto.getShardIndex());
             this.update(myFile);
+        } else {
+            this.insert(file);
         }
     }
 
