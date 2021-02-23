@@ -27,18 +27,18 @@
             <el-menu-item index="3">
               <template slot="title"><i class="el-icon-delete"></i>回收站</template>
             </el-menu-item>
-            <el-menu-item index="4">
-              <template slot="title"><i class="el-icon-top"></i>上传列表</template>
-            </el-menu-item>
-            <el-menu-item index="5">
-              <template slot="title"><i class="el-icon-bottom"></i>下载列表</template>
-            </el-menu-item>
+<!--            <el-menu-item index="4">-->
+<!--              <template slot="title"><i class="el-icon-top"></i>上传列表</template>-->
+<!--            </el-menu-item>-->
+<!--            <el-menu-item index="5">-->
+<!--              <template slot="title"><i class="el-icon-bottom"></i>下载列表</template>-->
+<!--            </el-menu-item>-->
             <el-footer>
               <!--              <el-progress :percentage="50" "></el-progress>-->
               <el-progress type="circle" :percentage="100" stroke-width="25" color="#ebeef5"></el-progress>
               <br>
               <label>内存占用：</label><span>4156G/10T</span><br>
-              <label>当前时间：</label><br><span>2021/07/11 21:13:02</span>
+              <label>当前时间：</label><br><span>{{dateString(nowTime)}}</span>
 
             </el-footer>
           </el-menu>
@@ -167,6 +167,7 @@ export default {
       tabPosition: 'left',
       tableData: [],
       showMoreOper: false,
+      nowTime: new Date(),
       loading: false,
       multipleSelection: [],
       currentId: 0,
@@ -223,6 +224,7 @@ export default {
         // eslint-disable-next-line standard/object-curly-even-spacing
         let bread = {path: '/', parentId: self.currentId, name: scope.row.name}
         self.currentId = scope.row.id
+        self.parentPath = scope.row.name
         self.list(self.currentId)
         self.Breadcrumb.push(bread)
       } else {

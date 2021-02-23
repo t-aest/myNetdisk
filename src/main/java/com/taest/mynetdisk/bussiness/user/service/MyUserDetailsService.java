@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.taest.mynetdisk.bussiness.user.entity.MyUser;
 import com.taest.mynetdisk.bussiness.user.mapper.MyUserMapper;
+import com.taest.mynetdisk.dto.LoginUserDto;
 import com.taest.mynetdisk.exception.file.UserException;
 import com.taest.mynetdisk.response.ResultStatus;
+import com.taest.mynetdisk.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.GrantedAuthority;
@@ -36,6 +38,6 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         List<GrantedAuthority> auths = AuthorityUtils.commaSeparatedStringToAuthorityList("role");
 
-        return new User(myUser.getLoginName(), new BCryptPasswordEncoder().encode(myUser.getPassword()), auths);
+        return new LoginUserDto(userName, SecurityUtils.encryptPassword(myUser.getPassword()), auths);
     }
 }
