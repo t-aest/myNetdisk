@@ -39,5 +39,7 @@ public interface IFileService {
 
     Result mkdir(String parentId, String dirName);
 
+    Result rename(String fileId, String filename);
+
     Object download(String id, HttpServletResponse response);
 }

@@ -251,9 +251,7 @@ public class FileServiceImpl extends BaseController implements IFileService {
 
     @Override
     public Result deleteFile(String id) {
-        QueryWrapper<MyFile> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",id);
-        MyFile myFile = fileMapper.selectOne(queryWrapper);
+        MyFile myFile = selectFileById(id);
         if (StringUtils.checkValNull(myFile)){
             return failure(ResultStatus.FILE_NOT_EXIST);
         }
@@ -271,6 +269,12 @@ public class FileServiceImpl extends BaseController implements IFileService {
         }else {
             return failure(ResultStatus.DELETE_FILE_ERROR);
         }
+    }
+
+    private MyFile selectFileById(String id) {
+        QueryWrapper<MyFile> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", id);
+        return fileMapper.selectOne(queryWrapper);
     }
 
     @Override
@@ -297,10 +301,23 @@ public class FileServiceImpl extends BaseController implements IFileService {
     }
 
     @Override
+    public Result rename(String fileId, String filename) {
+        MyFile selectFileById = selectFileById(fileId);
+        if (MyObjectUtils.isEmpty(selectFileById)){
+            return failure(ResultStatus.FILE_NOT_EXIST);
+        }
+        selectFileById.setName(filename);
+        int updateById = fileMapper.updateById(selectFileById);
+        if (updateById!=0){
+            return success(selectFileById);
+        }else {
+            return failure(ResultStatus.RENAME_ERROR);
+        }
+    }
+
+    @Override
     public Object download(String id, HttpServletResponse response) {
-        QueryWrapper<MyFile> wrapper = new QueryWrapper<>();
-        wrapper.eq("id", id);
-        MyFile myFile = fileMapper.selectOne(wrapper);
+        MyFile myFile = selectFileById(id);
         String downloadPath = FILE_PATH + myFile.getPath();
         File downloadFile = new File(downloadPath);
         if (!downloadFile.exists()){

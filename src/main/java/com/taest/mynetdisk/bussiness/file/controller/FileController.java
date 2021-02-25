@@ -112,4 +112,11 @@ public class FileController extends BaseController {
                         @RequestParam("filename") String dirName) {
         return fileService.mkdir(parentId, dirName);
     }
+
+    @ApiOperation(value = "重命名", notes = "文件重命名")
+    @PostMapping("/rename")
+    public Result rename(@RequestParam("fileId") String fileId,
+                        @RequestParam("filename") String filename) {
+        return fileService.rename(fileId, filename);
+    }
 }
