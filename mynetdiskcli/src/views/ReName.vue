@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-button v-show="isShow" @click="renameClick" plain >
+    <el-button v-show="isShow" plain id="rename-click">
 <!--      <i class="el-icon-folder-add el-icon&#45;&#45;left">&nbsp;新建文件夹</i>-->
       重命名
     </el-button>
@@ -73,13 +73,19 @@ export default {
       this.dialogVisible = true
     },
     rename () {
-      var self = this
+      let self = this
+      let filename = self.filename
       console.log('save rename')
       self.dialogVisible = false
       // var self = this
+      console.log(self.filename)
+      console.log(self.fileSuffix)
+      if (self.fileSuffix !== '') {
+        filename = self.filename + '.' + self.fileSuffix
+      }
       let params = {
         'fileId': self.fileId,
-        'filename': self.filename
+        'filename': filename
       }
       apiConfig.rename(params)
         .then(res => {
@@ -93,7 +99,6 @@ export default {
           }
         }).catch(err => {
           self.$message.error('重命名失败 ：' + err)
-          self.afterRename()
           self.dialogVisible = false
         })
     }

@@ -69,9 +69,15 @@
               <el-button @click="delFile(0)" plain>
                 <i class="el-icon-delete el-icon--left">&nbsp;删除</i>
               </el-button>
-              <el-button plain>
-                <i class="el-icon-upload2 el-icon--left">&nbsp;重命名</i>
-              </el-button>
+<!--              <el-button @click="rename" plain>&nbsp;重命名</el-button>-->
+
+              <ReName class="renameClick" ref="reName" style="float: left"
+                      v-bind:is-show="showRenameBtn"
+                      v-bind:file-id="selectFileId"
+                      v-bind:filename="fileName"
+                      v-bind:file-suffix="fileSuffix"
+                      v-bind:after-rename="afterRename">重命名
+              </ReName>
               <el-button plain>&nbsp;复制到</el-button>
               <el-button plain>&nbsp;移动到</el-button>
             </el-button-group>
@@ -106,7 +112,10 @@
                 <template slot-scope="scope">
                   <div @click="fileClick(scope)">
                     <img :src="getIcon(scope)">&nbsp;
-                    <span>{{ scope.row.name }}</span>
+<!--                    <el-input class="renamefile" v-model="fileName">-->
+<!--                      <template slot="append">.{{fileSuffix}}</template>-->
+<!--                    </el-input>-->
+                    <span class="filename">{{ scope.row.name }}</span>
                     <div style="float: right;" class="more-oper" v-show="showMoreOper">
                       <el-dropdown style="float: right;top: 9px">
                     <span class="el-dropdown-link"><i class="el-icon-more el-icon--right"></i>
@@ -114,7 +123,7 @@
                         <el-dropdown-menu slot="dropdown">
                           <el-dropdown-item>移动到</el-dropdown-item>
                           <el-dropdown-item>复制到</el-dropdown-item>
-                          <el-dropdown-item>重命名</el-dropdown-item>
+                          <el-dropdown-item @click.native="rename(scope)">重命名</el-dropdown-item>
                           <el-dropdown-item @click.native="delFile(scope)">删除</el-dropdown-item>
                         </el-dropdown-menu>
                       </el-dropdown>
@@ -156,22 +165,28 @@ import Bus from '@/assets/js/bus'
 import {apiConfig} from '../request/api'
 import {FileTypes, Util} from '../assets/js/util'
 import CreateFolder from './CreateFolder'
+import ReName from './ReName'
 import {v4 as uuidv4} from 'uuid'
+import $ from 'jquery'
 
 export default {
   name: 'HelloWorld',
-  components: {CreateFolder},
+  components: {CreateFolder, ReName},
   data () {
     return {
       msg: 'display content',
       tabPosition: 'left',
       tableData: [],
       showMoreOper: false,
+      showRenameBtn: false,
       nowTime: new Date(),
       loading: false,
       multipleSelection: [],
       currentId: 0,
+      fileName: 'tes',
+      fileSuffix: 'pdf',
       parentPath: '',
+      selectFileId: '',
       Breadcrumb: [
         {path: '/main', parentId: 0, name: '首页'}
       ]
@@ -208,6 +223,22 @@ export default {
     dateString (date) {
       return Util.formatdate(date, 0)
     },
+    rename (scope) {
+      let self = this
+      // console.log('click rename')
+      // console.log(scope)
+      self.selectFileId = scope.row.id
+      let name = scope.row.name
+      let index = name.lastIndexOf('.')
+      if (index === -1) {
+        self.fileName = name
+        self.fileSuffix = ''
+      } else {
+        self.fileName = name.slice(0, index)
+        self.fileSuffix = name.slice(index + 1, name.length)
+      }
+      $('#rename-click').click()
+    },
     testBread (item) {
       console.log(item)
       let self = this
@@ -234,6 +265,22 @@ export default {
     handleSelectionChange (val) {
       let self = this
       self.multipleSelection = val
+      console.log(self.tableData)
+      console.log(self.multipleSelection)
+      console.log(val)
+      if (self.multipleSelection.length === 1) {
+        self.showRenameBtn = true
+        self.selectFileId = self.multipleSelection[0].id
+        let name = self.multipleSelection[0].name
+        let index = name.lastIndexOf('.')
+        self.fileName = name.slice(0, index)
+        self.fileSuffix = name.slice(index + 1, name.length)
+        if (self.filename === self.fileSuffix) {
+          self.fileSuffix = ''
+        }
+      } else {
+        self.showRenameBtn = false
+      }
     },
     onMouseEnter (row, column, cell, event) {
       // eslint-disable-next-line no-unused-vars
@@ -323,6 +370,11 @@ export default {
     afterCreate (resp) {
       let self = this
       self.tableData.push(resp)
+    },
+    afterRename (resp) {
+      let self = this
+      console.log(resp)
+      self.refresh()
     },
     upload () {
       // 打开文件选择框
