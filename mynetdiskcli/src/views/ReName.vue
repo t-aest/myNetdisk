@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-button v-show="isShow" plain id="rename-click">
+    <el-button v-show="isShow" @click="renameClick" plain id="rename-click">
 <!--      <i class="el-icon-folder-add el-icon&#45;&#45;left">&nbsp;新建文件夹</i>-->
       重命名
     </el-button>

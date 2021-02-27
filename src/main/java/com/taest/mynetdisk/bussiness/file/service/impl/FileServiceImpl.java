@@ -7,15 +7,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.taest.mynetdisk.bussiness.file.entity.MyFile;
 import com.taest.mynetdisk.bussiness.file.mapper.FileMapper;
 import com.taest.mynetdisk.bussiness.file.service.IFileService;
+import com.taest.mynetdisk.dto.CommandResult;
 import com.taest.mynetdisk.dto.FileDto;
 import com.taest.mynetdisk.exception.file.FileException;
 import com.taest.mynetdisk.response.BaseController;
 import com.taest.mynetdisk.response.Result;
 import com.taest.mynetdisk.response.ResultStatus;
-import com.taest.mynetdisk.util.CopyUtil;
-import com.taest.mynetdisk.util.MyObjectUtils;
-import com.taest.mynetdisk.util.MyStringUtils;
-import com.taest.mynetdisk.util.UuidUtil;
+import com.taest.mynetdisk.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -306,9 +304,18 @@ public class FileServiceImpl extends BaseController implements IFileService {
         if (MyObjectUtils.isEmpty(selectFileById)){
             return failure(ResultStatus.FILE_NOT_EXIST);
         }
+        String old_db_path = selectFileById.getPath();
+        int i = old_db_path.lastIndexOf("/");
+        old_db_path = old_db_path.substring(0,i);
+        String old_path = FILE_PATH + selectFileById.getPath();
+        File rename_file = new File(old_path);
+        String new_path = rename_file.getParent() + File.separator + filename;
+        String cmd = "mv "+old_path+" " + new_path;
+        CommandResult commandResult = CommandUtils.exec(cmd);
         selectFileById.setName(filename);
+        selectFileById.setPath(old_db_path + File.separator+ filename);
         int updateById = fileMapper.updateById(selectFileById);
-        if (updateById!=0){
+        if (updateById!=0 && commandResult.isSuccess()){
             return success(selectFileById);
         }else {
             return failure(ResultStatus.RENAME_ERROR);
