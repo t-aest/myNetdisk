@@ -2,6 +2,7 @@ package com.taest.mynetdisk.bussiness.file.service;
 
 import com.taest.mynetdisk.bussiness.file.entity.MyFile;
 import com.taest.mynetdisk.dto.FileDto;
+import com.taest.mynetdisk.dto.FolderDto;
 import com.taest.mynetdisk.response.Result;
 
 import javax.servlet.http.HttpServletResponse;
@@ -17,7 +18,7 @@ import java.util.List;
  */
 public interface IFileService {
 
-    List<MyFile> list();
+    List<FolderDto> listFolder();
 
     List<MyFile> queryByParentId(String parentId);
 

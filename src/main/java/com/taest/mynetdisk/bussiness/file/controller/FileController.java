@@ -4,6 +4,7 @@ package com.taest.mynetdisk.bussiness.file.controller;
 import com.taest.mynetdisk.bussiness.file.entity.MyFile;
 import com.taest.mynetdisk.bussiness.file.service.IFileService;
 import com.taest.mynetdisk.dto.FileDto;
+import com.taest.mynetdisk.dto.FolderDto;
 import com.taest.mynetdisk.response.BaseController;
 import com.taest.mynetdisk.response.Result;
 import io.swagger.annotations.Api;
@@ -30,6 +31,13 @@ public class FileController extends BaseController {
 
     @Autowired
     private IFileService fileService;
+
+    @ApiOperation(value = "文件夹列表", notes = "文件夹列表查询")
+    @GetMapping("/folders")
+    public Result folders() {
+        List<FolderDto> list = fileService.listFolder();
+        return success(list);
+    }
 
     @ApiOperation(value = "文件列表", notes = "文件列表查询")
     @GetMapping("/files/{parentId}")
