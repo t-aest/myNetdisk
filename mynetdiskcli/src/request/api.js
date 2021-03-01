@@ -1,6 +1,6 @@
 // 引入http.js
 // eslint-disable-next-line no-unused-vars
-import { get, post, put, $delete } from '../request/request'
+import {get, post, put, $delete, noParameGet} from '../request/request'
 // GET /zoos：列出所有动物园
 // POST /zoos：新建一个动物园
 // GET /zoos/ID：获取某个指定动物园的信息
@@ -12,6 +12,7 @@ import { get, post, put, $delete } from '../request/request'
 export const apiConfig = {
   // 文件列表查询接口
   listFiles: data => get('file/files', data),
+  listFolders: data => noParameGet('file/folders'),
   delFile: id => $delete('file/delFile', id),
   mkdir: params => post('file/mkdir', params),
   rename: params => post('file/rename', params),
