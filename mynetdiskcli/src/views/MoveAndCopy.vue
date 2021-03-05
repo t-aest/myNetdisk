@@ -17,6 +17,7 @@
         :props="defaultProps"
         default-expand-all
         :filter-node-method="filterNode"
+        @node-click="handleNodeClick"
         ref="tree">
          <span class="custom-tree-node" slot-scope="{ data }">
             <span>
@@ -44,6 +45,9 @@ export default {
       default: false
     },
     moveOrCopy: {
+      default: 0
+    },
+    fileId: {
       default: 0
     },
     parenId: {
@@ -86,6 +90,9 @@ export default {
     handleClose (done) {
       let self = this
       self.dialogVisible = false
+    },
+    handleNodeClick (data) {
+      console.log(data)
     },
     openCreateFolder () {
       console.log('asd')
