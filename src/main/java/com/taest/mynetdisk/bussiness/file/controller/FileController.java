@@ -127,4 +127,12 @@ public class FileController extends BaseController {
                         @RequestParam("filename") String filename) {
         return fileService.rename(fileId, filename);
     }
+
+    @ApiOperation(value = "移动复制", notes = "移动文件或者文件夹")
+    @PostMapping("/moveorcopy")
+    public Result moveOrCopy(@RequestParam("fileId") String fileId,
+                         @RequestParam("targetFileId") String targetFileId,
+                         @RequestParam("operFlag") Integer operFlag) {
+        return fileService.moveOrCopy(fileId, targetFileId,operFlag);
+    }
 }

@@ -331,6 +331,7 @@ public class FileServiceImpl extends BaseController implements IFileService {
     }
 
     @Override
+    @Transactional
     public Result rename(String fileId, String filename) {
         MyFile selectFileById = selectFileById(fileId);
         if (MyObjectUtils.isEmpty(selectFileById)) {
@@ -351,6 +352,39 @@ public class FileServiceImpl extends BaseController implements IFileService {
             return success(selectFileById);
         } else {
             return failure(ResultStatus.RENAME_ERROR);
+        }
+    }
+
+    @Override
+    public Result moveOrCopy(String fileId, String targetFileId, Integer operFlag) {
+        MyFile file = selectFileById(fileId);
+        MyFile targetFile = selectFileById(targetFileId);
+        CommandResult commandResult = null;
+        if (MyObjectUtils.isEmpty(file) ||MyObjectUtils.isEmpty(targetFile)) {
+            return failure(ResultStatus.FILE_NOT_EXIST);
+        }
+        String oldPath = FILE_PATH + targetFile.getPath();
+        String modifyPath = FILE_PATH + targetFile.getPath();
+        if (operFlag==0){
+            //移动到
+            file.setPath(modifyPath);
+            file.setParentId(targetFileId);
+            this.update(file);
+            String moveCmd = "mv " + oldPath + " " + modifyPath;
+            commandResult = CommandUtils.exec(moveCmd);
+        }
+        if (operFlag==1){
+            //复制到
+            file.setPath(modifyPath);
+            file.setParentId(targetFileId);
+            this.insert(file);
+            String copyCmd = "cp " + oldPath + " " + modifyPath;
+            commandResult = CommandUtils.exec(copyCmd);
+        }
+        if (commandResult.isSuccess()) {
+            return success();
+        } else {
+            return failure(ResultStatus.MOVE_OR_COPY_ERROR);
         }
     }
 

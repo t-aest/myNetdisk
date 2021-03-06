@@ -42,5 +42,7 @@ public interface IFileService {
 
     Result rename(String fileId, String filename);
 
+    Result moveOrCopy(String fileId, String targetFileId,Integer operFlag);
+
     Object download(String id, HttpServletResponse response);
 }
