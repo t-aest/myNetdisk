@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-button @click="openCreateFolder" plain >
+    <el-button v-show="isShow" @click="openCreateFolder" plain >
       {{dialogTitle}}
     </el-button>
     <el-dialog
@@ -27,7 +27,7 @@
       </el-tree>
       <span slot="footer" class="dialog-footer">
     <el-button @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="create">确 定</el-button>
+    <el-button type="primary" @click="submit">确 定</el-button>
   </span>
     </el-dialog>
   </div>
@@ -53,7 +53,7 @@ export default {
     parenId: {
       default: 0
     },
-    afterCreate: {
+    afterMoveOrCopy: {
       type: Function,
       default: null
     }
@@ -65,6 +65,7 @@ export default {
       filterText: '',
       dialogTitle: '',
       folderData: [],
+      selectFileId: '0',
       defaultProps: {
         children: 'children',
         label: 'name'
@@ -93,11 +94,35 @@ export default {
     },
     handleNodeClick (data) {
       console.log(data)
+      let self = this
+      self.selectFileId = data.id
     },
     openCreateFolder () {
       console.log('asd')
       this.listFolder()
       this.dialogVisible = true
+    },
+    submit () {
+      var self = this
+      let params = {
+        'fileId': self.fileId,
+        'targetFileId': self.selectFileId,
+        'operFlag': self.moveOrCopy
+      }
+      apiConfig.moveorcopy(params)
+        .then(res => {
+          if (res.code === 0) {
+            self.$message.success('操作成功')
+            self.afterMoveOrCopy(res.data)
+            self.dialogVisible = false
+          } else {
+            self.$message.error('操作失败')
+            self.dialogVisible = false
+          }
+        }).catch(err => {
+          self.$message.error('操作失败 ：' + err)
+          self.dialogVisible = false
+        })
     },
     listFolder () {
       let self = this

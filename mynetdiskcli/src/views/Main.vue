@@ -78,8 +78,8 @@
                       v-bind:file-suffix="fileSuffix"
                       v-bind:after-rename="afterRename">重命名
               </ReName>
-              <el-button plain>&nbsp;复制到</el-button>
-              <el-button plain>&nbsp;移动到</el-button>
+              <MoveAndCopy class="moveClick" ref="moveFile" v-bind:is-show="showRenameBtn" v-bind:move-or-copy="1" v-bind:file-id="selectFileId" v-bind:after-move-or-copy="afterMoveOrCopy" style="float: left"></MoveAndCopy>
+              <MoveAndCopy class="moveClick" ref="moveFile" v-bind:is-show="showRenameBtn" v-bind:move-or-copy="0" v-bind:file-id="selectFileId" v-bind:after-move-or-copy="afterMoveOrCopy" style="float: left"></MoveAndCopy>
             </el-button-group>
 
             <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -166,12 +166,13 @@ import {apiConfig} from '../request/api'
 import {FileTypes, Util} from '../assets/js/util'
 import CreateFolder from './CreateFolder'
 import ReName from './ReName'
+import MoveAndCopy from './MoveAndCopy'
 import {v4 as uuidv4} from 'uuid'
 import $ from 'jquery'
 
 export default {
   name: 'HelloWorld',
-  components: {CreateFolder, ReName},
+  components: {CreateFolder, ReName, MoveAndCopy},
   data () {
     return {
       msg: 'display content',
@@ -225,7 +226,7 @@ export default {
     },
     rename (scope) {
       let self = this
-      // console.log('click rename')
+      console.log('click rename')
       // console.log(scope)
       self.selectFileId = scope.row.id
       let name = scope.row.name
@@ -372,6 +373,11 @@ export default {
       self.tableData.push(resp)
     },
     afterRename (resp) {
+      let self = this
+      console.log(resp)
+      self.refresh()
+    },
+    afterMoveOrCopy (resp) {
       let self = this
       console.log(resp)
       self.refresh()
