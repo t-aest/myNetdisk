@@ -363,11 +363,11 @@ public class FileServiceImpl extends BaseController implements IFileService {
         if (MyObjectUtils.isEmpty(file) ||MyObjectUtils.isEmpty(targetFile)) {
             return failure(ResultStatus.FILE_NOT_EXIST);
         }
-        String oldPath = FILE_PATH + targetFile.getPath();
+        String oldPath = FILE_PATH + file.getPath();
         String modifyPath = FILE_PATH + targetFile.getPath();
         if (operFlag==0){
             //移动到
-            file.setPath(modifyPath);
+            file.setPath(targetFile.getPath() + File.separator + file.getName());
             file.setParentId(targetFileId);
             this.update(file);
             String moveCmd = "mv " + oldPath + " " + modifyPath;
@@ -375,7 +375,7 @@ public class FileServiceImpl extends BaseController implements IFileService {
         }
         if (operFlag==1){
             //复制到
-            file.setPath(modifyPath);
+            file.setPath(targetFile.getPath() + File.separator + file.getName());
             file.setParentId(targetFileId);
             this.insert(file);
             String copyCmd = "cp " + oldPath + " " + modifyPath;

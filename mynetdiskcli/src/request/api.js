@@ -16,6 +16,7 @@ export const apiConfig = {
   delFile: id => $delete('file/delFile', id),
   mkdir: params => post('file/mkdir', params),
   rename: params => post('file/rename', params),
+  moveorcopy: params => post('file/moveorcopy', params),
   download: id => get('file/download', id),
   login: params => post('user/login', params, 'json')
 }

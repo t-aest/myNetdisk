@@ -33,6 +33,7 @@ public enum ResultStatus {
     USERNAME_OR_PASSWORD_ERROR(1017, HttpStatus.INTERNAL_SERVER_ERROR, "账户名或者密码错误"),
     FILE_SECOND_PASS(1011, HttpStatus.OK, "文件秒传"),
     FILE_BREAKPOINT_UPLOAD(1012, HttpStatus.OK, "断点续传"),
+    MOVE_OR_COPY_ERROR(1020, HttpStatus.OK, "移动复制失败"),
     RENAME_ERROR(1019, HttpStatus.INTERNAL_SERVER_ERROR, "重命名失败");
 
     private Integer code;
