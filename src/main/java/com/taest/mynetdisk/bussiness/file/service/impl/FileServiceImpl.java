@@ -411,6 +411,7 @@ public class FileServiceImpl extends BaseController implements IFileService {
 
     @Override
     public Object download(String id, HttpServletResponse response) {
+        //TODO 文件夹、多文件打包下载
         MyFile myFile = selectFileById(id);
         String downloadPath = FILE_PATH + myFile.getPath();
         File downloadFile = new File(downloadPath);
