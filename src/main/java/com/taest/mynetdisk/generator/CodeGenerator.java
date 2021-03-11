@@ -59,7 +59,7 @@ public class CodeGenerator {
 
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setModuleName(null);
+        pc.setModuleName("user");
         pc.setParent("com.taest.mynetdisk.bussiness.user");
         mpg.setPackageInfo(pc);
 
