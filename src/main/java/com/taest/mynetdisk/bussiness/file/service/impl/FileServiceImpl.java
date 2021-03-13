@@ -27,8 +27,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * <p>
@@ -419,27 +423,113 @@ public class FileServiceImpl extends BaseController implements IFileService {
             return failure(ResultStatus.FILE_NOT_EXIST);
         }
         response.reset();
+        response.setCharacterEncoding("UTF-8");
         response.setContentType("application/octet-stream");
-        response.setCharacterEncoding("utf-8");
-        response.setContentLength((int) downloadFile.length());
-        response.setHeader("Content-Disposition", "attachment;filename=" + downloadFile.getName());
-        try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(downloadFile));) {
-            byte[] buff = new byte[1024];
-            OutputStream os = response.getOutputStream();
-            int i = 0;
-            while ((i = bis.read(buff)) != -1) {
-                os.write(buff, 0, i);
-                os.flush();
+        if (downloadFile.isDirectory()){
+            // 对文件名进行编码处理中文问题
+            // inline在浏览器中直接显示，不提示用户下载
+            // attachment弹出对话框，提示用户进行下载保存本地
+            // 默认为inline方式
+            response.setHeader("Content-Disposition", "attachment;filename=" + new String(downloadFile.getName().getBytes(StandardCharsets.UTF_8)));
+            // 设置成这样可以不用保存在本地，再输出， 通过response流输出,直接输出到客户端浏览器中。
+            try {
+                ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());
+                List<String> files = new ArrayList<>();
+                File[] listFiles = downloadFile.listFiles();
+                for (File listFile : listFiles) {
+                    files.add(listFile.getPath());
+                }
+                if (MyCollectionUtils.isEmpty(files)){
+                    throw new FileException(ResultStatus.DOWNLOAD_FAILED,null);
+                }
+                zipFiles(files,zos,"");
+                zos.closeEntry();
+                zos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        }else {
+            response.setContentLength((int) downloadFile.length());
+            response.setHeader("Content-Disposition", "attachment;filename=" + downloadFile.getName());
+            try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(downloadFile));) {
+                byte[] buff = new byte[1024];
+                OutputStream os = response.getOutputStream();
+                int i = 0;
+                while ((i = bis.read(buff)) != -1) {
+                    os.write(buff, 0, i);
+                    os.flush();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
+
         return null;
     }
 
+    /**
+     * 压缩文件
+     * @param files  压缩的文件的路径
+     * @param zos
+     */
+    private void zipFiles(List<String> files, ZipOutputStream zos,String baseDir) {
+        byte[] buffer = new byte[4096];
+        try {
+            for (String file : files) {
+                File zip_file = new File(file);
+                if (!zip_file.exists()){
+                    throw new FileException(ResultStatus.DOWNLOAD_FAILED,null);
+                }
+                if (zip_file.isFile()){
+                    String baseFileDir = baseDir + "";
+                    //创建输入流读取文件
+                    BufferedInputStream bis = new BufferedInputStream(new FileInputStream(zip_file));
+                    //将文件写入zip内，即将文件进行打包
+                    ZipEntry zipEntry = new ZipEntry(baseFileDir + zip_file.getName());
+                    zos.putNextEntry(zipEntry);
+                    int size = 0;
+                    while ((size = bis.read(buffer))>0){
+                        zos.write(buffer, 0, size);
+                    }
+                    bis.close();
+                }else {
+                    String baseFileDir = baseDir + zip_file.getName();
+                    File[] listFiles = zip_file.listFiles();
+                    List<String> pathFiles = new ArrayList<>();
+                    for (File listFile : listFiles) {
+                        pathFiles.add(listFile.getPath());
+                    }
+                    if (MyCollectionUtils.isEmpty(files)){
+                        throw new FileException(ResultStatus.DOWNLOAD_FAILED,null);
+                    }
+                    zipFiles(pathFiles,zos,baseFileDir + File.separator);
+                }
+            }
+        }catch (Exception e){
+            if (e instanceof FileException){
+                throw new FileException(ResultStatus.DOWNLOAD_FAILED,null);
+            }
+            e.printStackTrace();
+        }finally {
+//            if (null!=zos){
+//                try {
+//                    zos.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+        }
+    }
+
     public static void main(String[] args) {
-        File file = new File("/home/taest/tmp/50M");
-        System.out.println("file = " + file.getParentFile().getPath());
+        File file = new File("/home/taest/tmpdir");
+        File[] files = file.listFiles();
+        for (File file1 : files) {
+            System.out.println("file1 = " + file1.getPath());
+        }
+        System.out.println("file = " + file.listFiles());
     }
 
     @Transactional
