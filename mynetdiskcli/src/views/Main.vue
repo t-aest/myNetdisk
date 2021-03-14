@@ -116,7 +116,8 @@
 <!--                      <template slot="append">.{{fileSuffix}}</template>-->
 <!--                    </el-input>-->
                     <span class="filename">{{ scope.row.name }}</span>
-                    <div style="float: right;" class="more-oper" v-show="showMoreOper">
+                  </div>
+                    <div style="float: right; position: relative;left: 3px;bottom: 36px;height: 3px" class="more-oper" v-show="showMoreOper">
                       <el-dropdown style="float: right;top: 9px">
                     <span class="el-dropdown-link"><i class="el-icon-more el-icon--right"></i>
                    </span>
@@ -133,7 +134,7 @@
                       &nbsp;
                       <el-button type="text" style="float: right" icon="el-icon-share"></el-button>
                     </div>
-                  </div>
+
                 </template>
               </el-table-column>
               <el-table-column
