@@ -1,2 +1,16 @@
 server:
   port: 8096
+  servlet:
+    context-path: /api
+#MYSQL链接
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/t_netdisk?characterEncoding=utf8&useSSL=true&serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL
+    username: root
+    password: 123456
+  redis:
+    host: 127.0.0.1
+    port: 6379
+file:
+  path: /home/taest/tmpdir/
