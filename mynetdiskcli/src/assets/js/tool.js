@@ -55,17 +55,17 @@ export const Tool = {
    * @param obj
    * @returns {number}
    */
-  // removeObj: function (array, obj) {
-  //   let index = -1
-  //   for (let i = 0; i < array.length; i++) {
-  //     if (array[i] === obj) {
-  //       array.splice(i, 1)
-  //       index = i
-  //       break
-  //     }
-  //   }
-  //   return index
-  // },
+  removeObj: function (array, obj) {
+    let index = -1
+    for (let i = 0; i < array.length; i++) {
+      if (array[i] === obj) {
+        array.splice(i, 1)
+        index = i
+        break
+      }
+    }
+    return index
+  },
 
   /**
    * 10进制转62进制
