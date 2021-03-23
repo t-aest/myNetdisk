@@ -19,8 +19,22 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+
+    public static String ADMIN = "ROLE_ADMIN";
+
+    public static String USER = "ROLE_USER";
+
     @Autowired
     private UserDetailsService userDetailsService;
+
+    /**
+     * 开放访问的请求
+     */
+    private final static String[] PERMIT_ALL_MAPPING = {
+            "/user/login",
+            "/kaptcha/**"
+    };
+
 
 //    private final AdminAuthenticationProcessingFilter adminAuthenticationProcessingFilter;
 //
@@ -35,7 +49,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable();
+        http.cors()
+                .and()
+                .csrf()
+                .disable();
 //        http.authorizeRequests()
 //                .antMatchers("/user/login/**").permitAll()
 //                .anyRequest().authenticated()
@@ -51,6 +68,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/kaptcha/**")
                 .antMatchers("/user/login");
     }
+
+
 
     @Bean
     PasswordEncoder password(){
