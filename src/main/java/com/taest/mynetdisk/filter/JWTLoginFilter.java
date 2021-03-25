@@ -1,6 +1,9 @@
 package com.taest.mynetdisk.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.taest.mynetdisk.dto.UserDto;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -10,6 +13,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -24,7 +31,31 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
      */
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        return super.attemptAuthentication(request, response);
+        try {
+            UserDto user =new ObjectMapper().readValue(request.getInputStream(), UserDto.class);
+            return authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            user.getLoginName(),
+                            user.getPassword(),
+                            new ArrayList<>())
+            );
+        } catch (Exception e) {
+            try {
+                //未登錄出現賬號或密碼錯誤時，使用json進行提示
+                response.setContentType("application/json;charset=utf-8");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                PrintWriter out = response.getWriter();
+                Map<String,Object> map = new HashMap<String,Object>();
+                map.put("code",HttpServletResponse.SC_UNAUTHORIZED);
+                map.put("message","账号或密码错误！");
+                out.write(new ObjectMapper().writeValueAsString(map));
+                out.flush();
+                out.close();
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+            throw new RuntimeException(e);
+        }
     }
 
     /**
