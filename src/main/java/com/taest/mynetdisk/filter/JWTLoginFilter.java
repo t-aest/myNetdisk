@@ -1,7 +1,11 @@
 package com.taest.mynetdisk.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.taest.mynetdisk.dto.LoginUserDto;
 import com.taest.mynetdisk.dto.UserDto;
+import com.taest.mynetdisk.util.JwtTokenUtil;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -62,7 +66,38 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
      * 用户登录成功后，生成token,并且返回json数据给前端
      */
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        super.successfulAuthentication(request, response, chain, authResult);
+    protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+        //json web token构建
+        JwtTokenUtil tokenUtil = new JwtTokenUtil();
+        String token = tokenUtil.generateToken(((LoginUserDto) authResult.getPrincipal()).getUsername());
+//        String token = Jwts.builder()
+//                //此处为自定义的、实现org.springframework.security.core.userdetails.UserDetails的类，需要和配置中设置的保持一致
+//                //此处的subject可以用一个用户名，也可以是多个信息的组合，根据需要来定
+//                .setSubject(((MyUserDetails) auth.getPrincipal()).getUsername())
+//                //设置token过期时间，24小時
+//                .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 24 * 1000))
+//
+//                //设置token签名、密钥
+//                .signWith(SignatureAlgorithm.HS512, "MyJwtSecret")
+//
+//                .compact();
+
+        //返回token
+        res.addHeader("Authorization", "Bearer " + token);
+        try {
+            //登录成功時，返回json格式进行提示
+            res.setContentType("application/json;charset=utf-8");
+            res.setStatus(HttpServletResponse.SC_OK);
+            PrintWriter out = res.getWriter();
+            Map<String,Object> map = new HashMap<String,Object>();
+            map.put("code",HttpServletResponse.SC_OK);
+            map.put("message","登陆成功！");
+            out.write(new ObjectMapper().writeValueAsString(map));
+            out.flush();
+            out.close();
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
     }
-}
+    }
+
