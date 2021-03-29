@@ -79,13 +79,6 @@ public class MyUserController extends BaseController {
             return failure(ResultStatus.LOGIN_ERROR);
         }
         return success(loginUser);
-//        LoginUserDto loginUserDto = userService.login(userDto);
-//        String token = UuidUtil.getShortUuid();
-//        loginUserDto.setToken(token);
-////        request.getSession().setAttribute(Constants.LOGIN_USER, loginUserDto);
-//        redisTemplate.opsForValue().set(token, JSON.toJSONString(loginUserDto), 3600, TimeUnit.SECONDS);
-//        responseDto.setContent(loginUserDto);
-//        return responseDto;
     }
 
 }
