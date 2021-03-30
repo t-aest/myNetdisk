@@ -27,20 +27,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userDetailsService;
 
-    /**
-     * 开放访问的请求
-     */
-    private final static String[] PERMIT_ALL_MAPPING = {
-            "/user/login",
-            "/kaptcha/**"
-    };
 
-
-//    private final AdminAuthenticationProcessingFilter adminAuthenticationProcessingFilter;
-//
-//    public WebSecurityConfig(AdminAuthenticationProcessingFilter adminAuthenticationProcessingFilter) {
-//        this.adminAuthenticationProcessingFilter = adminAuthenticationProcessingFilter;
-//    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
