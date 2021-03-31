@@ -70,17 +70,6 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
         //json web token构建
         JwtTokenUtil tokenUtil = new JwtTokenUtil();
         String token = tokenUtil.generateToken(((LoginUserDto) authResult.getPrincipal()).getUsername());
-//        String token = Jwts.builder()
-//                //此处为自定义的、实现org.springframework.security.core.userdetails.UserDetails的类，需要和配置中设置的保持一致
-//                //此处的subject可以用一个用户名，也可以是多个信息的组合，根据需要来定
-//                .setSubject(((MyUserDetails) auth.getPrincipal()).getUsername())
-//                //设置token过期时间，24小時
-//                .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 24 * 1000))
-//
-//                //设置token签名、密钥
-//                .signWith(SignatureAlgorithm.HS512, "MyJwtSecret")
-//
-//                .compact();
 
         //返回token
         res.addHeader("Authorization", "Bearer " + token);
