@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * add by linhaijing 2020年7月3日21:14:24
  * JwtToken生成的工具类
  * JWT token的格式：header.payload.signature
  * header的格式（算法、token的类型）：

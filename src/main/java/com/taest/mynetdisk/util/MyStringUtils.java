@@ -1,6 +1,8 @@
 package com.taest.mynetdisk.util;
 
+import cn.hutool.core.util.StrUtil;
 import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 
 /**
  * String Utils
@@ -14,4 +16,5 @@ public final class MyStringUtils {
     public static boolean isNotEmpty(@Nullable Object str) {
         return !isEmpty(str);
     }
+
 }
