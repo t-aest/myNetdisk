@@ -55,7 +55,6 @@ public class MyUserController extends BaseController {
     public Result login(@RequestBody UserDto userDto, HttpServletRequest request) {
         LOG.info("用户登录开始");
         // 根据验证码token去获取缓存中的验证码，和用户输入的验证码是否一致
-        // String imageCode = (String) request.getSession().getAttribute(userDto.getImageCodeToken());
         String imageCode = (String) redisTemplate.opsForValue().get(userDto.getImageCodeToken());
         LOG.info("从redis中获取到的验证码：{}", imageCode);
         if (MyStringUtils.isEmpty(imageCode)) {
@@ -67,11 +66,9 @@ public class MyUserController extends BaseController {
             return failure(ResultStatus.ERROR_VERIFICATION_CODE);
         } else {
             // 验证通过后，移除验证码
-//            request.getSession().removeAttribute(userDto.getImageCodeToken());
             redisTemplate.delete(userDto.getImageCodeToken());
         }
 
-//        userDto.setPassword(SecurityUtils.encryptPassword(userDto.getPassword()));
 
         LoginUserDto loginUser = SecurityUtils.login(userDto.getLoginName(),userDto.getPassword(), authenticationManager);
 
