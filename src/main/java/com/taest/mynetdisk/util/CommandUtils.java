@@ -32,19 +32,4 @@ public class CommandUtils {
             return commandResult;
         }
     }
-
-    public static void main(String[] args) throws IOException {
-//        String a = "/home/taest/tmpdir/wallhaven-wyzzlp.jpg";
-//        int i = a.lastIndexOf("/");
-//        a = a.substring(0,i);
-//        System.out.println("a = " + a+ File.separator+ "asd");
-//        String cmd = "mv /home/taest/tmpdir/eyykl8.jpg /home/taest/tmpdir/ee.jpg";
-//        CommandResult exec = CommandUtils.exec(cmd);
-//        System.out.println("exec = " + exec.isSuccess());
-        File file = new File("/home/taest/tmpdir/ee.jpg");
-        System.out.println("file.getParentFile() = " + file.exists());
-        System.out.println("file.getParentFile() = " + file.getParent());
-
-//        OutputStream outputStream = pro.getOutputStream();
-    }
 }
