@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 /**
  * @author twd
- * @description: TODO 类描述
+ * @description: 基础响应
  * @date 2021-01-12 14:06
  */
 public abstract class BaseController {
