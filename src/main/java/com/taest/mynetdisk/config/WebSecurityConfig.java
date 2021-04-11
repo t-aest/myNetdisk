@@ -1,6 +1,4 @@
 package com.taest.mynetdisk.config;
-
-//import com.taest.mynetdisk.filter.AdminAuthenticationProcessingFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

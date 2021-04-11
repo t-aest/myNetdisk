@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author twd
- * @description: TODO 类描述
+ * @description: 全局异常捕获处理
  * @date 2021-01-12 15:10
  */
 @ControllerAdvice

@@ -5,7 +5,7 @@ import lombok.ToString;
 import org.springframework.http.HttpStatus;
 
 /**
- * @className: ResultStatus
+ * @className: 返回类
  * @description: TODO 类描述
  * @author: twd
  * @date: 2021/1/12
