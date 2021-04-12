@@ -34,7 +34,6 @@ public class KaptchaController {
             System.out.println("captcha = " + captcha.getCode());
             redisTemplate.opsForValue().set(imageCodeToken,captcha.getCode(),300,TimeUnit.SECONDS);
             //验证图形验证码的有效性，返回boolean值
-//            captcha.verify("1234");
         } catch (IllegalArgumentException e) {
             httpServletResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
